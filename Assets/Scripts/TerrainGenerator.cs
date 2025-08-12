@@ -9,12 +9,12 @@ public class TerrainGenerator : MonoBehaviour
     public float triggerDistance = 30f, roadHeight = 0.01f, terrainHeight = 0f, segmentLifetime = 1200f;
 
     public float normalCurveChange = 1.2f, maxTotalCurve = 60f;
-    public float sharpTurnChance = 0.07f, sharpAngleMin = 18f, sharpAngleMax = 35f;
+    public float sharpTurnChance = 0.07f, sharpAngleMin = 18f, sharpAngleMax = 40f;
     public int sharpEaseMin = 3, sharpEaseMax = 7;
 
-    public int minSubSegments = 4, maxSubSegments = 10; // adaptativo
-    public float subOverlapZ = 0.2f;                    // solape para evitar cortes
-    public float subSmoothing = 0.6f;                   // suavizado intra-segmento
+    public int minSubSegments = 4, maxSubSegments = 12; // adaptativo
+    public float subOverlapZ = 0.3f;                    // solape para evitar cortes
+    public float subSmoothing = 0.7f;                   // suavizado intra-segmento
 
     private Vector3 nextSpawnPosition;
     private Quaternion nextSpawnRotation = Quaternion.identity;

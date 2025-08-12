@@ -1,75 +1,94 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class TerrainGenerator : MonoBehaviour
 {
-    [Header("Prefabs")]
-    public GameObject roadPrefab;    // Prefab del segmento de carretera
-    public GameObject terrainPrefab; // Prefab del terreno
+    public GameObject roadPrefab, terrainPrefab;
+    public Transform player;
 
-    [Header("Player")]
-    public Transform player;         // Auto o cámara que avanza
+    public int segmentLength = 50, initialSegments = 5;
+    public float triggerDistance = 30f, roadHeight = 0.01f, terrainHeight = 0f, segmentLifetime = 1200f;
 
-    [Header("Settings")]
-    public int segmentLength = 50;         // Largo de cada segmento
-    public int initialSegments = 5;        // Cuántos segmentos al inicio
-    public float triggerDistance = 30f;    // Distancia para generar nuevo segmento
-    public float roadYOffset = 0.01f;      // Elevación de la carretera
-    public float terrainYOffset = 0f;      // Altura del terreno
-    public float segmentLifetime = 1200f;  // ⏳ Tiempo de vida en segundos (20 minutos)
+    public float normalCurveChange = 1.2f, maxTotalCurve = 60f;
+    public float sharpTurnChance = 0.07f, sharpAngleMin = 18f, sharpAngleMax = 35f;
+    public int sharpEaseMin = 3, sharpEaseMax = 7;
 
-    private Vector3 nextSpawnPosition;     // Dónde crear el próximo segmento
+    public int minSubSegments = 4, maxSubSegments = 10; // adaptativo
+    public float subOverlapZ = 0.2f;                    // solape para evitar cortes
+    public float subSmoothing = 0.6f;                   // suavizado intra-segmento
+
+    private Vector3 nextSpawnPosition;
+    private Quaternion nextSpawnRotation = Quaternion.identity;
+    private float currentCurve = 0f, smoothCurve = 0f, smoothVel;
+
+    private int easeStepsLeft = 0;
+    private float easeStepDelta = 0f;
 
     void Start()
     {
         nextSpawnPosition = Vector3.zero;
-
-        // Generar los primeros segmentos
-        for (int i = 0; i < initialSegments; i++)
-        {
-            SpawnSegment();
-        }
+        for (int i = 0; i < initialSegments; i++) SpawnSegment();
     }
 
     void Update()
     {
-        if (player == null)
-        {
-            Debug.LogWarning("Player no asignado en TerrainGenerator!");
-            return;
-        }
-
-        // Comprobar si el jugador está lo bastante cerca para generar otro
-        float distanceToNext = Vector3.Distance(player.position, nextSpawnPosition);
-        if (distanceToNext < triggerDistance)
-        {
-            SpawnSegment();
-        }
+        if (!player) return;
+        if (Vector3.Distance(player.position, nextSpawnPosition) < triggerDistance) SpawnSegment();
     }
 
     void SpawnSegment()
     {
-        // Crear un objeto padre para agrupar carretera + terrenos
-        GameObject segmentContainer = new GameObject("Segment");
+        GameObject container = new GameObject("Segment");
 
-        // Ajustar la altura Y de la carretera
-        Vector3 roadSpawnPos = nextSpawnPosition + new Vector3(0, roadYOffset, 0);
+        float curveDelta;
+        if (easeStepsLeft > 0)
+        {
+            curveDelta = easeStepDelta; easeStepsLeft--;
+        }
+        else if (Random.value < sharpTurnChance)
+        {
+            float sign = Random.value < 0.5f ? -1f : 1f;
+            float total = sign * Random.Range(sharpAngleMin, sharpAngleMax);
+            int steps = Random.Range(sharpEaseMin, sharpEaseMax + 1);
+            easeStepDelta = total / steps; easeStepsLeft = steps - 1;
+            curveDelta = easeStepDelta;
+        }
+        else
+        {
+            curveDelta = Random.Range(-normalCurveChange, normalCurveChange);
+        }
 
-        // Instanciar la carretera y hacerla hija del contenedor
-        GameObject road = Instantiate(roadPrefab, roadSpawnPos, Quaternion.identity, segmentContainer.transform);
+        currentCurve = Mathf.Clamp(currentCurve + curveDelta, -maxTotalCurve, maxTotalCurve);
+        Quaternion targetRot = Quaternion.Euler(0f, currentCurve, 0f);
 
-        // Generar terreno a los lados
-        float offset = 25f; // distancia lateral desde la carretera al terreno
-        Vector3 leftPos = nextSpawnPosition + new Vector3(-offset, terrainYOffset, 0);
-        Vector3 rightPos = nextSpawnPosition + new Vector3(offset, terrainYOffset, 0);
+        int subSegments = Mathf.Clamp(
+            Mathf.RoundToInt(Mathf.Lerp(minSubSegments, maxSubSegments,
+                Mathf.InverseLerp(0f, sharpAngleMax, Mathf.Abs(curveDelta)))),
+            minSubSegments, maxSubSegments);
 
-        Instantiate(terrainPrefab, leftPos, Quaternion.identity, segmentContainer.transform);
-        Instantiate(terrainPrefab, rightPos, Quaternion.identity, segmentContainer.transform);
+        float pieceLen = (segmentLength / (float)subSegments);
+        Vector3 pos = nextSpawnPosition;
+        float targetAngle = currentCurve;
 
-        // Programar la destrucción del segmento después de "segmentLifetime" segundos
-        Destroy(segmentContainer, segmentLifetime);
+        for (int s = 0; s < subSegments; s++)
+        {
+            smoothCurve = Mathf.SmoothDampAngle(smoothCurve, targetAngle, ref smoothVel, 1f - subSmoothing);
+            Quaternion stepRot = Quaternion.Euler(0f, smoothCurve, 0f);
 
-        // Avanzar el punto de spawn
-        nextSpawnPosition += new Vector3(0, 0, segmentLength);
+            Vector3 roadPos = pos + stepRot * new Vector3(0f, roadHeight, 0f);
+            Instantiate(roadPrefab, roadPos, stepRot, container.transform);
+
+            float offset = 25f;
+            Vector3 leftPos  = pos + stepRot * new Vector3(-offset, terrainHeight, 0f);
+            Vector3 rightPos = pos + stepRot * new Vector3( offset, terrainHeight, 0f);
+            Instantiate(terrainPrefab, leftPos,  Quaternion.identity, container.transform);
+            Instantiate(terrainPrefab, rightPos, Quaternion.identity, container.transform);
+
+            float advance = Mathf.Max(0.01f, pieceLen - subOverlapZ);
+            pos += stepRot * new Vector3(0f, 0f, advance);
+        }
+
+        Destroy(container, segmentLifetime);
+        nextSpawnRotation = targetRot;
+        nextSpawnPosition = pos;
     }
 }

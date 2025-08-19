@@ -1,94 +1,133 @@
 using UnityEngine;
 
-public class TerrainGenerator : MonoBehaviour
+public class TrackGenerator : MonoBehaviour
 {
-    public GameObject roadPrefab, terrainPrefab;
+    public TrackPiece[] piecePrefabs;     // tus 8 prefabs con TrackPiece + sockets
     public Transform player;
 
-    public int segmentLength = 50, initialSegments = 5;
-    public float triggerDistance = 30f, roadHeight = 0.01f, terrainHeight = 0f, segmentLifetime = 1200f;
+    public int initialPieces = 5;
+    public float aheadDistance = 300f;
+    public float roadHeight = 0.01f;
+    public float pieceLifetime = 1200f;
 
-    public float normalCurveChange = 1.2f, maxTotalCurve = 60f;
-    public float sharpTurnChance = 0.07f, sharpAngleMin = 18f, sharpAngleMax = 40f;
-    public int sharpEaseMin = 3, sharpEaseMax = 7;
+    public int initialOneSideCount = 8;   // cuántas piezas “bias” al inicio
+    public bool initialLeft = true;       // true: sólo curvas a la IZQ al principio
 
-    public int minSubSegments = 4, maxSubSegments = 12; // adaptativo
-    public float subOverlapZ = 0.3f;                    // solape para evitar cortes
-    public float subSmoothing = 0.7f;                   // suavizado intra-segmento
+    [Range(0f,1f)] public float noRepeatBias = 0.6f; // evita repetir exactamente el mismo prefab
+    [Range(0f,1f)] public float avoidOppositeAfterTurn = 0.5f; // evita inmediato opuesto
 
-    private Vector3 nextSpawnPosition;
-    private Quaternion nextSpawnRotation = Quaternion.identity;
-    private float currentCurve = 0f, smoothCurve = 0f, smoothVel;
-
-    private int easeStepsLeft = 0;
-    private float easeStepDelta = 0f;
+    Transform lastSocketEnd;
+    Vector3 nextPos;
+    Quaternion nextRot = Quaternion.identity;
+    int lastIndex = -1;
+    int spawnedCount = 0;
+    TrackPiece.PieceType lastType;
 
     void Start()
     {
-        nextSpawnPosition = Vector3.zero;
-        for (int i = 0; i < initialSegments; i++) SpawnSegment();
+        nextPos = Vector3.zero; nextRot = Quaternion.identity; lastSocketEnd = null;
+
+        for (int i = 0; i < initialPieces; i++) SpawnNextPiece();
+        while (player && Vector3.Distance(player.position, nextPos) < aheadDistance) SpawnNextPiece();
     }
 
     void Update()
     {
         if (!player) return;
-        if (Vector3.Distance(player.position, nextSpawnPosition) < triggerDistance) SpawnSegment();
+        while (Vector3.Distance(player.position, nextPos) < aheadDistance) SpawnNextPiece();
     }
 
-    void SpawnSegment()
+    void SpawnNextPiece()
     {
-        GameObject container = new GameObject("Segment");
+        int idx = ChooseIndex();
+        var prefab = piecePrefabs[idx];
+        var piece = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        var t = piece.transform;
 
-        float curveDelta;
-        if (easeStepsLeft > 0)
+        if (lastSocketEnd == null) AlignByStart(t, prefab.SocketStart, nextPos, nextRot);
+        else AlignStartToEnd(t, prefab.SocketStart, lastSocketEnd);
+
+        if (Mathf.Abs(roadHeight) > 0f) t.position = new Vector3(t.position.x, roadHeight, t.position.z);
+
+        lastSocketEnd = prefab.SocketEnd;
+        nextPos = lastSocketEnd.position;
+        nextRot = lastSocketEnd.rotation;
+
+        Destroy(piece.gameObject, pieceLifetime);
+
+        lastIndex = idx;
+        lastType = prefab.type;
+        spawnedCount++;
+    }
+
+    int ChooseIndex()
+    {
+        // filtro por regla de “un solo lado” al inicio
+        bool biasActive = spawnedCount < initialOneSideCount;
+        var pool = System.Array.FindAll(piecePrefabs, p => PassesFilters(p, biasActive));
+
+        if (pool.Length == 0) pool = piecePrefabs; // fallback
+
+        // evitar repetir exactamente el mismo prefab
+        int idx = IndexOf(piecePrefabs, pool[Random.Range(0, pool.Length)]);
+        if (lastIndex >= 0 && Random.value < noRepeatBias)
         {
-            curveDelta = easeStepDelta; easeStepsLeft--;
+            int safety = 6;
+            while (idx == lastIndex && safety-- > 0)
+                idx = IndexOf(piecePrefabs, pool[Random.Range(0, pool.Length)]);
         }
-        else if (Random.value < sharpTurnChance)
+        return idx;
+    }
+
+    bool PassesFilters(TrackPiece p, bool biasActive)
+    {
+        var t = p.type;
+
+        if (biasActive)
         {
-            float sign = Random.value < 0.5f ? -1f : 1f;
-            float total = sign * Random.Range(sharpAngleMin, sharpAngleMax);
-            int steps = Random.Range(sharpEaseMin, sharpEaseMax + 1);
-            easeStepDelta = total / steps; easeStepsLeft = steps - 1;
-            curveDelta = easeStepDelta;
+            // permitir recta siempre; curvas sólo del lado elegido
+            if (IsStraight(t)) return true;
+            if (initialLeft)  return IsLeft(t);
+            else              return IsRight(t);
         }
-        else
+
+        // evitar inmediatamente la curva opuesta a la anterior (suave)
+        if (Random.value < avoidOppositeAfterTurn && IsCurve(t) && IsCurve(lastType))
         {
-            curveDelta = Random.Range(-normalCurveChange, normalCurveChange);
+            if (IsLeft(t) && IsRight(lastType))  return false;
+            if (IsRight(t) && IsLeft(lastType))  return false;
         }
 
-        currentCurve = Mathf.Clamp(currentCurve + curveDelta, -maxTotalCurve, maxTotalCurve);
-        Quaternion targetRot = Quaternion.Euler(0f, currentCurve, 0f);
+        return true;
+    }
 
-        int subSegments = Mathf.Clamp(
-            Mathf.RoundToInt(Mathf.Lerp(minSubSegments, maxSubSegments,
-                Mathf.InverseLerp(0f, sharpAngleMax, Mathf.Abs(curveDelta)))),
-            minSubSegments, maxSubSegments);
+    // helpers tipo
+    bool IsStraight(TrackPiece.PieceType t) => t == TrackPiece.PieceType.Straight;
+    bool IsLeft(TrackPiece.PieceType t) =>
+        t == TrackPiece.PieceType.GentleLeft || t == TrackPiece.PieceType.SharpLeft ||
+        t == TrackPiece.PieceType.SLeft     || t == TrackPiece.PieceType.HairpinLeft;
+    bool IsRight(TrackPiece.PieceType t) =>
+        t == TrackPiece.PieceType.GentleRight || t == TrackPiece.PieceType.SharpRight ||
+        t == TrackPiece.PieceType.SRight      || t == TrackPiece.PieceType.HairpinRight;
+    bool IsCurve(TrackPiece.PieceType t) => IsLeft(t) || IsRight(t);
 
-        float pieceLen = (segmentLength / (float)subSegments);
-        Vector3 pos = nextSpawnPosition;
-        float targetAngle = currentCurve;
+    // alineación por sockets
+    void AlignByStart(Transform piece, Transform socketStart, Vector3 targetPos, Quaternion targetRot)
+    {
+        var rotDelta = targetRot * Quaternion.Inverse(socketStart.rotation);
+        piece.rotation = rotDelta * piece.rotation;
+        var offset = targetPos - socketStart.position;
+        piece.position += offset;
+    }
 
-        for (int s = 0; s < subSegments; s++)
-        {
-            smoothCurve = Mathf.SmoothDampAngle(smoothCurve, targetAngle, ref smoothVel, 1f - subSmoothing);
-            Quaternion stepRot = Quaternion.Euler(0f, smoothCurve, 0f);
+    void AlignStartToEnd(Transform piece, Transform socketStart, Transform prevSocketEnd)
+    {
+        AlignByStart(piece, socketStart, prevSocketEnd.position, prevSocketEnd.rotation);
+    }
 
-            Vector3 roadPos = pos + stepRot * new Vector3(0f, roadHeight, 0f);
-            Instantiate(roadPrefab, roadPos, stepRot, container.transform);
-
-            float offset = 25f;
-            Vector3 leftPos  = pos + stepRot * new Vector3(-offset, terrainHeight, 0f);
-            Vector3 rightPos = pos + stepRot * new Vector3( offset, terrainHeight, 0f);
-            Instantiate(terrainPrefab, leftPos,  Quaternion.identity, container.transform);
-            Instantiate(terrainPrefab, rightPos, Quaternion.identity, container.transform);
-
-            float advance = Mathf.Max(0.01f, pieceLen - subOverlapZ);
-            pos += stepRot * new Vector3(0f, 0f, advance);
-        }
-
-        Destroy(container, segmentLifetime);
-        nextSpawnRotation = targetRot;
-        nextSpawnPosition = pos;
+    int IndexOf(TrackPiece[] arr, TrackPiece x)
+    {
+        for (int i = 0; i < arr.Length; i++) if (arr[i] == x) return i;
+        return -1;
     }
 }

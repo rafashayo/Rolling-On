@@ -24,6 +24,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
+        SceneManager.LoadScene("Lobby");
         base.OnJoinedLobby();
         PhotonNetwork.JoinOrCreateRoom("test", null, null);
         Debug.Log("Room");

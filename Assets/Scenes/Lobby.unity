@@ -783,7 +783,7 @@ GameObject:
   - component: {fileID: 959606717}
   - component: {fileID: 959606716}
   m_Layer: 5
-  m_Name: InputField (TMP) (1)
+  m_Name: NombreJoin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1555,7 +1555,7 @@ GameObject:
   - component: {fileID: 1505804928}
   - component: {fileID: 1505804927}
   m_Layer: 5
-  m_Name: InputField (TMP)
+  m_Name: NombreCrear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

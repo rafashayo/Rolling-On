@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 
 public class CreateAndJoin : MonoBehaviourPunCallbacks
@@ -10,7 +11,7 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
-        PhotonNetwork.CreateRoom(input_Create.text);
+        PhotonNetwork.CreateRoom(input_Create.text , new RoomOptions() { MaxPlayers = 5, IsVisible = true, IsOpen = true }, TypedLobby.Default , null   );
 
     }
 
@@ -21,6 +22,6 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.LoadLevel("GamePlay");
+        PhotonNetwork.LoadLevel("Multiplayer");
     }
 }

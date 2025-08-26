@@ -1,3 +1,5 @@
+using System.Collections;    
+using System.Collections.Generic;    
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
@@ -11,8 +13,7 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
-        PhotonNetwork.CreateRoom(input_Create.text , new RoomOptions() { MaxPlayers = 5, IsVisible = true, IsOpen = true }, TypedLobby.Default , null   );
-
+        PhotonNetwork.JoinOrCreateRoom(input_Create.text , new RoomOptions() { MaxPlayers = 5} , TypedLobby.Default , null);
     }
 
     public void JoinRoom()

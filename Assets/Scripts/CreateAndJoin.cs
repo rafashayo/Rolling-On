@@ -13,7 +13,7 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
-        PhotonNetwork.JoinOrCreateRoom(input_Create.text , new RoomOptions() { MaxPlayers = 5} , TypedLobby.Default , null);
+        PhotonNetwork.CreateRoom(input_Create.text , new RoomOptions() { MaxPlayers = 5, IsVisible = true, IsOpen = true} , TypedLobby.Default , null);
     }
 
     public void JoinRoom()
@@ -23,6 +23,6 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        PhotonNetwork.LoadLevel("Multiplayer");
+        PhotonNetwork.LoadLevel("Terreno");
     }
 }

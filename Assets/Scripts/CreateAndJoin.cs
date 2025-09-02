@@ -21,8 +21,15 @@ public class CreateAndJoin : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(input_Join.text);
     }
 
+    public void JoinRoomInList(string RoomName)
+    {
+        PhotonNetwork.JoinRoom(RoomName);
+    }
+
     public override void OnJoinedRoom()
     {
         PhotonNetwork.LoadLevel("Terreno");
     }
+
+
 }

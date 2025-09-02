@@ -3,88 +3,96 @@ using System.Linq;
 
 public class TrackGenerator : MonoBehaviour
 {
-    [System.Serializable]
-    public class TrackPrefab
-    {
-        public GameObject prefab;          // el prefab de ruta
-        public Transform socketStart;      // asignado en runtime al instanciar
-        public Transform socketEnd;
-    }
-
-    public GameObject[] piecePrefabs;      // tus 11 prefabs (arrastralos aquí)
+    public GameObject[] piecePrefabs;   // tus prefabs con SocketStart / SocketEnd
     public Transform player;
-    public int initialPieces = 6;
-    public float aheadDistance = 300f;
-    public float roadHeight = 0.01f;
-    public float pieceLifetime = 1200f;
+
+    public int initialPieces = 3;       // pocas al inicio
+    public float triggerDistance = 60f; // cuando el player esté a < X m del final, agrega 1
+    public float roadHeight = 0.01f;    // altura fija
+    public float pieceLifetime = 1200f; // 20 min
     public float avoidImmediateRepeat = 0.7f;
+    public string startSocketName = "SocketStart";
+    public string endSocketName   = "SocketEnd";
 
     Transform lastSocketEnd;
     Vector3 nextPos;
     Quaternion nextRot = Quaternion.identity;
     int lastIndex = -1;
+    bool halted = false;
 
     void Start()
     {
-        nextPos = Vector3.zero;
-        nextRot = Quaternion.identity;
-        lastSocketEnd = null;
+        if (piecePrefabs == null || piecePrefabs.Length == 0) { Debug.LogError("Sin prefabs."); halted = true; return; }
 
-        for (int i = 0; i < initialPieces; i++) SpawnNextPiece();
-        while (player && Vector3.Distance(player.position, nextPos) < aheadDistance)
-            SpawnNextPiece();
+        // valida sockets y limpia el pool
+        for (int i = piecePrefabs.Length - 1; i >= 0; i--)
+        {
+            if (!PrefabHasSockets(piecePrefabs[i]))
+            {
+                Debug.LogError($"Prefab '{piecePrefabs[i].name}' sin {startSocketName}/{endSocketName}. Removido.");
+                piecePrefabs = piecePrefabs.Where((p, idx) => idx != i).ToArray();
+            }
+        }
+        if (piecePrefabs.Length == 0) { Debug.LogError("No hay prefabs válidos con sockets."); halted = true; return; }
+
+        nextPos = Vector3.zero; nextRot = Quaternion.identity; lastSocketEnd = null;
+
+        // instancia solo unas pocas piezas de arranque
+        int n = Mathf.Max(1, initialPieces);
+        for (int i = 0; i < n && !halted; i++)
+            if (!TrySpawnNext()) { halted = true; break; }
     }
 
     void Update()
     {
-        if (!player) return;
-        while (Vector3.Distance(player.position, nextPos) < aheadDistance)
-            SpawnNextPiece();
+        if (halted || !player) return;
+
+        float d = lastSocketEnd ? Vector3.Distance(player.position, lastSocketEnd.position)
+                                : Vector3.Distance(player.position, nextPos);
+
+        if (d < triggerDistance)
+            TrySpawnNext(); // SOLO 1 por frame → “de a poco”
     }
 
-    void SpawnNextPiece()
+    bool TrySpawnNext()
     {
-        if (piecePrefabs == null || piecePrefabs.Length == 0) return;
+        if (piecePrefabs.Length == 0) return false;
+
         int idx = ChooseIndex();
         var prefab = piecePrefabs[idx];
+        var inst = Instantiate(prefab);
+        var t = inst.transform;
 
-        // instanciar y buscar sockets
-        var instance = Instantiate(prefab);
-        var t = instance.transform;
-        var sockets = instance.GetComponentsInChildren<Transform>()
-                              .Where(tr => tr.name.ToLower().Contains("socket"))
-                              .ToArray();
+        var start = FindExactSocket(inst.transform, startSocketName);
+        var end   = FindExactSocket(inst.transform, endSocketName);
 
-        Transform socketStart = sockets.FirstOrDefault(s => s.name.ToLower().Contains("start"));
-        Transform socketEnd   = sockets.FirstOrDefault(s => s.name.ToLower().Contains("end"));
-
-        if (!socketStart || !socketEnd)
+        if (!start || !end)
         {
-            Debug.LogError($"Prefab {prefab.name} no tiene SocketStart o SocketEnd");
-            Destroy(instance);
-            return;
+            Debug.LogError($"Instancia '{prefab.name}' sin sockets {startSocketName}/{endSocketName}. Removido del pool.");
+            Destroy(inst);
+            piecePrefabs = piecePrefabs.Where(p => p != prefab).ToArray();
+            lastIndex = -1;
+            return piecePrefabs.Length > 0;
         }
 
-        if (lastSocketEnd == null)
-            AlignByStart(t, socketStart, nextPos, nextRot);
-        else
-            AlignStartToEnd(t, socketStart, lastSocketEnd);
+        if (lastSocketEnd == null) AlignByStart(t, start, nextPos, nextRot);
+        else AlignStartToEnd(t, start, lastSocketEnd);
 
-        if (Mathf.Abs(roadHeight) > 0f)
-            t.position = new Vector3(t.position.x, roadHeight, t.position.z);
+        if (roadHeight != 0f) t.position = new Vector3(t.position.x, roadHeight, t.position.z);
 
-        lastSocketEnd = socketEnd;
+        lastSocketEnd = end;
         nextPos = lastSocketEnd.position;
         nextRot = lastSocketEnd.rotation;
 
-        Destroy(instance, pieceLifetime);
+        Destroy(inst, pieceLifetime);
         lastIndex = idx;
+        return true;
     }
 
     int ChooseIndex()
     {
         int idx = Random.Range(0, piecePrefabs.Length);
-        if (lastIndex >= 0 && Random.value < avoidImmediateRepeat)
+        if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
         {
             int safety = 10;
             while (idx == lastIndex && safety-- > 0)
@@ -93,16 +101,32 @@ public class TrackGenerator : MonoBehaviour
         return idx;
     }
 
+    Transform FindExactSocket(Transform root, string exactName)
+    {
+        var t = root.GetComponentsInChildren<Transform>(true).FirstOrDefault(x => x.name == exactName);
+        if (t) return t;
+        string key = exactName.ToLower();
+        return root.GetComponentsInChildren<Transform>(true).FirstOrDefault(x => x.name.ToLower() == key);
+    }
+
     void AlignByStart(Transform piece, Transform socketStart, Vector3 targetPos, Quaternion targetRot)
     {
         var rotDelta = targetRot * Quaternion.Inverse(socketStart.rotation);
         piece.rotation = rotDelta * piece.rotation;
-        var offset = targetPos - socketStart.position;
-        piece.position += offset;
+        piece.position += (targetPos - socketStart.position);
     }
 
     void AlignStartToEnd(Transform piece, Transform socketStart, Transform prevSocketEnd)
     {
         AlignByStart(piece, socketStart, prevSocketEnd.position, prevSocketEnd.rotation);
+    }
+
+    bool PrefabHasSockets(GameObject prefab)
+    {
+        var temp = Instantiate(prefab);
+        temp.hideFlags = HideFlags.HideAndDontSave;
+        bool ok = FindExactSocket(temp.transform, startSocketName) && FindExactSocket(temp.transform, endSocketName);
+        DestroyImmediate(temp);
+        return ok;
     }
 }

@@ -17,7 +17,9 @@ public class RoomList : MonoBehaviourPunCallbacks
                 Destroy(AllRooms[i]);
             }
         }
-            AllRooms = new GameObject[roomList.Count];
+            
+        AllRooms = new GameObject[roomList.Count];
+
         for (int i = 0; i < roomList.Count; i++) 
         {
             if (roomList[i].IsOpen && roomList[i].IsVisible && roomList[i].PlayerCount >= 1)
@@ -29,4 +31,8 @@ public class RoomList : MonoBehaviourPunCallbacks
         }
     }
 
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.LogError("JoinRoom failed: " + message);
+    }
 }

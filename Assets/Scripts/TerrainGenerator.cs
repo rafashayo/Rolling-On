@@ -9,7 +9,7 @@ public class TrackGenerator : MonoBehaviour
     public int initialPieces = 3;       // pocas al inicio
     public float triggerDistance = 60f; // cuando el player esté a < X m del final, agrega 1
     public float roadHeight = 0.01f;    // altura fija
-    public float pieceLifetime = 1200f; // 20 min
+    public float pieceLifetime = 1200f; // 20 min   
     public float avoidImmediateRepeat = 0.7f;
     public string startSocketName = "SocketStart";
     public string endSocketName   = "SocketEnd";

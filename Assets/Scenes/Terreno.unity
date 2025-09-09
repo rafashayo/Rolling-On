@@ -539,13 +539,12 @@ MonoBehaviour:
   - {fileID: 292114954}
   player: {fileID: 0}
   initialPieces: 6
-  aheadDistance: 300
+  triggerDistance: 60
   roadHeight: 0.01
   pieceLifetime: 1200
   avoidImmediateRepeat: 0.7
   startSocketName: SocketStart
   endSocketName: SocketEnd
-  maxSpawnPerFrame: 8
 --- !u!4 &1692258187
 Transform:
   m_ObjectHideFlags: 0
@@ -599,13 +598,12 @@ MonoBehaviour:
   - {fileID: 292114954}
   player: {fileID: 1903881079}
   initialPieces: 5
-  aheadDistance: 300
+  triggerDistance: 60
   roadHeight: 0.01
   pieceLifetime: 1200
   avoidImmediateRepeat: 0.7
   startSocketName: SocketStart
   endSocketName: SocketEnd
-  maxSpawnPerFrame: 8
 --- !u!4 &1718198823
 Transform:
   m_ObjectHideFlags: 0

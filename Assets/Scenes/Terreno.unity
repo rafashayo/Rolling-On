@@ -358,6 +358,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1032899043 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6436406623228329600, guid: 6d2abd800c3e2694f9ba21e220a96927, type: 3}
+  m_PrefabInstance: {fileID: 1109552740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1109552740
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -424,8 +429,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7859990698425861326, guid: 6d2abd800c3e2694f9ba21e220a96927, type: 3}
       propertyPath: acceleration
-      value: 30
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8076776022114833027, guid: 6d2abd800c3e2694f9ba21e220a96927, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b78bc854fecfa314d97aca64193a9ea2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -473,14 +482,19 @@ MonoBehaviour:
   - {fileID: 1742567297}
   - {fileID: 236623012}
   - {fileID: 292114954}
-  player: {fileID: 0}
+  floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
+  player: {fileID: 1032899043}
   initialPieces: 6
-  triggerDistance: 60
+  triggerDistance: 120
   roadHeight: 0.01
   pieceLifetime: 1200
   avoidImmediateRepeat: 0.7
   startSocketName: SocketStart
   endSocketName: SocketEnd
+  floorSideTiles: 2
+  floorTileSpacing: 20
+  floorHeight: 0
+  rotateFloorWithRoad: 1
 --- !u!4 &1692258187
 Transform:
   m_ObjectHideFlags: 0
@@ -532,7 +546,8 @@ MonoBehaviour:
   - {fileID: 1742567297}
   - {fileID: 236623012}
   - {fileID: 292114954}
-  player: {fileID: 0}
+  floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
+  player: {fileID: 1032899043}
   initialPieces: 5
   triggerDistance: 60
   roadHeight: 0.01
@@ -540,6 +555,10 @@ MonoBehaviour:
   avoidImmediateRepeat: 0.7
   startSocketName: SocketStart
   endSocketName: SocketEnd
+  floorSideTiles: 2
+  floorTileSpacing: 20
+  floorHeight: 0
+  rotateFloorWithRoad: 1
 --- !u!4 &1718198823
 Transform:
   m_ObjectHideFlags: 0

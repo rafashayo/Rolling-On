@@ -3,16 +3,23 @@ using System.Linq;
 
 public class TrackGenerator : MonoBehaviour
 {
-    public GameObject[] piecePrefabs;   // tus prefabs con SocketStart / SocketEnd
+    public GameObject[] piecePrefabs;
+    public GameObject floorPrefab;        // ← tu prefab "floor"
     public Transform player;
 
-    public int initialPieces = 3;       // pocas al inicio
-    public float triggerDistance = 60f; // cuando el player esté a < X m del final, agrega 1
-    public float roadHeight = 0.01f;    // altura fija
-    public float pieceLifetime = 1200f; // 20 min   
+    public int initialPieces = 3;
+    public float triggerDistance = 60f;
+    public float roadHeight = 0.01f;
+    public float pieceLifetime = 1200f;
     public float avoidImmediateRepeat = 0.7f;
     public string startSocketName = "SocketStart";
     public string endSocketName   = "SocketEnd";
+
+    // Tiles de grass alrededor
+    public int floorSideTiles = 2;        // cuántas columnas por lado (izq/der)
+    public float floorTileSpacing = 20f;  // distancia entre tiles
+    public float floorHeight = 0f;        // altura del grass
+    public bool rotateFloorWithRoad = true;
 
     Transform lastSocketEnd;
     Vector3 nextPos;
@@ -24,7 +31,6 @@ public class TrackGenerator : MonoBehaviour
     {
         if (piecePrefabs == null || piecePrefabs.Length == 0) { Debug.LogError("Sin prefabs."); halted = true; return; }
 
-        // valida sockets y limpia el pool
         for (int i = piecePrefabs.Length - 1; i >= 0; i--)
         {
             if (!PrefabHasSockets(piecePrefabs[i]))
@@ -37,7 +43,6 @@ public class TrackGenerator : MonoBehaviour
 
         nextPos = Vector3.zero; nextRot = Quaternion.identity; lastSocketEnd = null;
 
-        // instancia solo unas pocas piezas de arranque
         int n = Mathf.Max(1, initialPieces);
         for (int i = 0; i < n && !halted; i++)
             if (!TrySpawnNext()) { halted = true; break; }
@@ -51,7 +56,7 @@ public class TrackGenerator : MonoBehaviour
                                 : Vector3.Distance(player.position, nextPos);
 
         if (d < triggerDistance)
-            TrySpawnNext(); // SOLO 1 por frame → “de a poco”
+            TrySpawnNext(); // 1 por frame
     }
 
     bool TrySpawnNext()
@@ -79,6 +84,36 @@ public class TrackGenerator : MonoBehaviour
         else AlignStartToEnd(t, start, lastSocketEnd);
 
         if (roadHeight != 0f) t.position = new Vector3(t.position.x, roadHeight, t.position.z);
+
+        // ---- Grass alrededor del tramo ----
+        if (floorPrefab)
+        {
+            Vector3 startW = start.position;
+            Vector3 endW   = end.position;
+            Vector3 fwd = (endW - startW); fwd.y = 0f; float length = fwd.magnitude;
+            if (length > 0.01f)
+            {
+                fwd /= length;
+                Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
+                int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
+
+                for (int f = 0; f < forwardTiles; f++)
+                {
+                    float along = (f + 0.5f) * floorTileSpacing;
+                    Vector3 basePos = startW + fwd * Mathf.Min(along, length - 0.01f);
+
+                    for (int s = -floorSideTiles; s <= floorSideTiles; s++)
+                    {
+                        if (s == 0) continue; // evita pisar la carretera
+                        Vector3 pos = basePos + right * (s * floorTileSpacing);
+                        pos.y = floorHeight;
+                        Quaternion rot = rotateFloorWithRoad ? Quaternion.LookRotation(fwd, Vector3.up) : Quaternion.identity;
+                        var tile = Instantiate(floorPrefab, pos, rot, t); // parent al tramo para que se limpie junto
+                    }
+                }
+            }
+        }
+        // -----------------------------------
 
         lastSocketEnd = end;
         nextPos = lastSocketEnd.position;

@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &3588238551760871512
 Transform:
@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 4492028828128273142}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.025, y: 0, z: -11.577}
+  m_LocalPosition: {x: 0.0388, y: 0, z: -11.5674}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43,12 +43,13 @@ GameObject:
   - component: {fileID: 8874641387533456645}
   - component: {fileID: 2934960535524122106}
   - component: {fileID: 6795932683277480805}
+  - component: {fileID: 2422527083603877080}
   m_Layer: 0
   m_Name: Curva bien abier
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1889478641863944666
 Transform:
@@ -60,7 +61,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 16.17806}
-  m_LocalScale: {x: 25, y: 1, z: 100}
+  m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8706657635063183608}
@@ -135,6 +136,28 @@ MonoBehaviour:
   SocketStart: {fileID: 0}
   SocketEnd: {fileID: 0}
   type: 1
+--- !u!64 &2422527083603877080
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6214661059066645048}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -2596935774340292734, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
 --- !u!1 &9041342267994541962
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,7 +172,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &8706657635063183608
 Transform:
@@ -159,10 +182,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9041342267994541962}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.32127407, z: 0, w: 0.94698626}
+  m_LocalRotation: {x: 0, y: -0.32358703, z: 0, w: 0.9461984}
   m_LocalPosition: {x: 7.7562, y: 0, z: -31.484}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1889478641863944666}
-  m_LocalEulerAnglesHint: {x: 0, y: -37.48, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -37.76, z: 0}

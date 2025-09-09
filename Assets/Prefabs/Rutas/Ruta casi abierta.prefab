@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2365198316479636817
 Transform:
@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2078213250252321712}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -18.414}
+  m_LocalPosition: {x: 0, y: 0, z: -18.41}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42,12 +42,13 @@ GameObject:
   - component: {fileID: 4496308325669431062}
   - component: {fileID: 7523005081414440301}
   - component: {fileID: 6847420872364208416}
+  - component: {fileID: 3565443109766107165}
   m_Layer: 0
   m_Name: Ruta casi abierta
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4496308325669431062
 Transform:
@@ -59,7 +60,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 22.725573}
-  m_LocalScale: {x: 25, y: 1, z: 100}
+  m_LocalScale: {x: 50, y: 1, z: 50}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6975663024408684458}
@@ -119,6 +120,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &3565443109766107165
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112095987735343435}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5095867617140627920, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
 --- !u!1 &8876776979516606466
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,7 +156,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6975663024408684458
 Transform:
@@ -143,10 +166,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8876776979516606466}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.4397824, z: -0, w: -0.89810437}
+  m_LocalRotation: {x: 0, y: 0.45632166, z: -0, w: -0.889815}
   m_LocalPosition: {x: 7.781, y: 0, z: -39.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4496308325669431062}
-  m_LocalEulerAnglesHint: {x: 0, y: 307.82, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 305.7, z: 0}

@@ -12,14 +12,14 @@ public class TrackGenerator : MonoBehaviour
     public float roadHeight = 0.01f;
     public float pieceLifetime = 1200f;
     public string startSocketName = "SocketStart";
-    public string endSocketName   = "SocketEnd";
+    public string endSocketName = "SocketEnd";
 
     public int scoreSamples = 5;        // cuántos prefabs probar por frame
     public float angleWeight = 1f;      // peso de desviación angular respecto a Z+
     public float lateralWeight = 0.3f;  // peso de desviación lateral (X)
     public float backwardRejectDot = 0.05f; // descarta si no avanza en Z (dot <= esto)
     public float overlapEpsilon = 0.12f;
-    public int   maxRecentBounds = 24;
+    public int maxRecentBounds = 24;
 
     Transform lastSocketEnd;
     Vector3 nextPos;
@@ -33,7 +33,7 @@ public class TrackGenerator : MonoBehaviour
         if (piecePrefabs == null || piecePrefabs.Length == 0) { Debug.LogError("Sin prefabs."); halted = true; return; }
         // valida sockets
         for (int i = piecePrefabs.Length - 1; i >= 0; i--)
-            if (!PrefabHasSockets(piecePrefabs[i])) { Debug.LogError($"'{piecePrefabs[i].name}' sin sockets. Removido."); piecePrefabs = piecePrefabs.Where((p, idx) => idx != i).ToArray(); }
+           // if (!PrefabHasSockets(piecePrefabs[i])) { Debug.LogError($"'{piecePrefabs[i].name}' sin sockets. Removido."); piecePrefabs = piecePrefabs.Where((p, idx) => idx != i).ToArray(); }
         if (piecePrefabs.Length == 0) { Debug.LogError("No hay prefabs válidos."); halted = true; return; }
 
         nextPos = Vector3.zero; nextRot = Quaternion.identity; lastSocketEnd = null;
@@ -69,7 +69,7 @@ public class TrackGenerator : MonoBehaviour
             var t = inst.transform;
 
             var start = FindSocket(inst.transform, startSocketName);
-            var end   = FindSocket(inst.transform, endSocketName);
+            var end = FindSocket(inst.transform, endSocketName);
             if (!start || !end) { Destroy(inst); continue; }
 
             // encastre hipotético
@@ -80,7 +80,7 @@ public class TrackGenerator : MonoBehaviour
 
             // avance y rumbo
             Vector3 toEnd = end.position - (lastSocketEnd ? lastSocketEnd.position : nextPos);
-            Vector3 fwdZ  = Vector3.forward; // queremos seguir Z+
+            Vector3 fwdZ = Vector3.forward; // queremos seguir Z+
             float dot = Vector3.Dot(toEnd.normalized, fwdZ);
             if (dot <= backwardRejectDot) { Destroy(inst); continue; } // no avanza en Z+
 
@@ -92,7 +92,7 @@ public class TrackGenerator : MonoBehaviour
             Bounds b = GetCombinedBounds(inst);
             bool overlap = false;
             for (int i = 0; i < recentBounds.Count; i++)
-                if (IntersectsBeyond(b, recentBounds[i], overlapEpsilon)) { overlap = true; break; }
+             //   if (IntersectsBeyond(b, recentBounds[i], overlapEpsilon)) { overlap = true; break; }
             if (overlap) { Destroy(inst); continue; }
 
             float score = angleWeight * angle + lateralWeight * lateral;
@@ -155,7 +155,9 @@ public class TrackGenerator : MonoBehaviour
         for (int i = 1; i < rends.Length; i++) b.Encapsulate(rends[i].bounds);
         return b;
     }
+}
 
-    bool IntersectsBeyond(Bounds a, Bounds b, float eps)
+   /* bool IntersectsBeyond(Bounds a, Bounds b, float eps)
     {
         float ox = Mathf.Min(a.max.x, b.max.x) - Mathf.Max(a.min.x, b.min.x);
+   */

@@ -15,42 +15,57 @@ public class CarController : MonoBehaviour
 
     Rigidbody rb;
     bool grounded;
+    Vector3 groundNormal = Vector3.up;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-        rb.centerOfMass = Vector3.down;
-        // Si querés: rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.centerOfMass = new Vector3(0f, -0.3f, 0.1f); // baja un poco el COM
     }
 
     void FixedUpdate()
     {
-        // Inputs
-        float v = Input.GetAxis("Vertical");   // W/S o flechas
-        float h = Input.GetAxis("Horizontal"); // A/D o flechas
+        float v = Input.GetAxis("Vertical");
+        float h = Input.GetAxis("Horizontal");
 
-        // Chequeo de suelo
-        grounded = Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, groundCheckDist, groundMask.value == 0 ? ~0 : groundMask);
-        if (grounded)
-            rb.AddForce(-transform.up * downForce, ForceMode.Acceleration);
+        // Chequeo de suelo + normal
+        Ray ray = new Ray(transform.position + Vector3.up * 0.1f, Vector3.down);
+        if (Physics.Raycast(ray, out var hit, groundCheckDist, (groundMask.value == 0 ? ~0 : groundMask)))
+        {
+            grounded = true;
+            groundNormal = hit.normal;
+            // pegado al piso
+            rb.AddForce(-groundNormal * downForce, ForceMode.Acceleration);
+        }
+        else
+        {
+            grounded = false;
+            groundNormal = Vector3.up;
+        }
 
-        // Velocidad deseada
-        float targetSpeed = v * maxSpeed;
-        float currentSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
+        // Proyectar forward y velocidad sobre el plano del suelo
+        Vector3 fwdOnGround = Vector3.ProjectOnPlane(transform.forward, groundNormal).normalized;
+        Vector3 velOnGround = Vector3.ProjectOnPlane(rb.linearVelocity, groundNormal);
+
+        // Velocidad escalar en dirección de avance
+        float currentSpeed = Vector3.Dot(velOnGround, fwdOnGround);
+        float targetSpeed = Mathf.Clamp(v, -1f, 1f) * maxSpeed;
         float speedDiff = targetSpeed - currentSpeed;
 
-        // Acelera/frena
-        Vector3 force = transform.forward * speedDiff * acceleration;
-        rb.AddForce(force, ForceMode.Acceleration);
+        // Acelerar/frenar
+        rb.AddForce(fwdOnGround * speedDiff * acceleration, ForceMode.Acceleration);
 
-        // --- Giro con inversión en reversa ---
-        // Determino si voy hacia adelante o hacia atrás
+        // Dirección del giro: invertir cuando vas marcha atrás
         float dir = (currentSpeed >= -0.1f) ? 1f : -1f;
 
-        float speed01 = Mathf.Clamp01(rb.linearVelocity.magnitude / (maxSpeed * 0.5f));
+        // Cuánto girar este frame (más giro con más agarre/suelo)
+        float speed01 = Mathf.Clamp01(velOnGround.magnitude / (maxSpeed * 0.5f));
         float turnThisFrame = h * turnSpeed * dir * speed01 * (grounded ? 1f : 0.2f) * Time.fixedDeltaTime;
-        rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, turnThisFrame, 0f));
+
+        // *** GIRO CORRECTO: sobre la NORMAL DEL SUELO (o Y si estás en el aire) ***
+        Quaternion yaw = Quaternion.AngleAxis(turnThisFrame, groundNormal);
+        rb.MoveRotation(yaw * rb.rotation);
     }
 }

@@ -1587,7 +1587,7 @@ MonoBehaviour:
   brakeAcceleration: 500
   turnSensitivity: 1
   maxSteerAngle: 30
-  _centerOfMass: {x: 0, y: 0, z: 0}
+  _centerOfMass: {x: 0, y: 0, z: -100}
   wheels:
   - wheelModel: {fileID: 831945847594549364}
     wheelCollider: {fileID: 1041254045}

@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
@@ -28,7 +30,7 @@ public class CameraFollow : MonoBehaviour
 
         transform.position = Vector3.Lerp(transform.position, targetPos, moveSmoothness * Time.deltaTime);
     }
-    
+
     void HandleRotation()
     {
         var direction = carTarget.position - transform.position;
@@ -38,4 +40,5 @@ public class CameraFollow : MonoBehaviour
 
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, rotSmoothness * Time.deltaTime);
     }
+
 }

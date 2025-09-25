@@ -11,6 +11,7 @@ public class CarController : MonoBehaviour
     {
         public GameObject wheelModel;
         public WheelCollider wheelCollider;
+        public GameObject WheelEffectObj;
         public Axe1 axe1;
     }
 
@@ -57,6 +58,7 @@ public class CarController : MonoBehaviour
     {
         GetInputs();
         AnimatedWheels();
+        WheelEffects();
     }
 
     void LateUpdate()
@@ -120,6 +122,21 @@ public class CarController : MonoBehaviour
             w.wheelCollider.GetWorldPose(out Vector3 pos, out Quaternion rot);
             // Aplicamos SIEMPRE: rotación del collider * offset guardado (no se acumula)
             w.wheelModel.transform.SetPositionAndRotation(pos, rot * _modelOffsetWorld[i]);
+        }
+    }
+
+    void WheelEffects()
+    {
+        foreach(var wheel in wheels)
+        {
+            if(Input.GetKey(KeyCode.Space) && wheel.axe1 == Axe1.Rear)
+            {
+                wheel.WheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = true;
+            }
+            else 
+            {
+                wheel.WheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = false;
+            }
         }
     }
 }

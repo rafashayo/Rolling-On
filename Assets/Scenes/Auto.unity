@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &1104656676 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4522132163902742144, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1390329967
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,6 +517,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -2600004986586864783, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4522132163902742144, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
       propertyPath: m_Name
       value: Car
@@ -559,13 +568,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4522132163902742144, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8645276144261414602}
   m_SourcePrefab: {fileID: 100100000, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
 --- !u!4 &8645276144261414597 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4706126643638104410, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
   m_PrefabInstance: {fileID: 8068439096639160364}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8645276144261414602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104656676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b90e5700e161427498fbf717136e4477, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxAcceleration: 30
+  brakeAcceleration: 50
+  turnSensitivity: 1
+  maxSteerAngle: 30
+  _centerOfMass: {x: 0, y: 0, z: -100}
+  wheels: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

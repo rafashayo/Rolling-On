@@ -140,7 +140,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &265128224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,6 +481,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1464585939
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1464585941}
+  - component: {fileID: 1464585942}
+  m_Layer: 0
+  m_Name: SpawningManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1464585941
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464585939}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 993.61523, y: 451.8688, z: -477.62726}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1464585942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464585939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cadfa2fb46544e54a863c266a58942d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carModel: {fileID: 4522132163902742144, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  playerCameraPF: {fileID: 5308254259043627881, guid: 39909608347c98e4c8bc6212a98ce536, type: 3}
+  carControllerPF: {fileID: 8629155084958720865, guid: 51c82437d878c5d4c9873d43c33aac55, type: 3}
 --- !u!1 &1551756905 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8393957279933335571, guid: b02313737460342449d234f14d1f47a2, type: 3}
@@ -1428,3 +1475,4 @@ SceneRoots:
   - {fileID: 1692258187}
   - {fileID: 265128225}
   - {fileID: 963965595}
+  - {fileID: 1464585941}

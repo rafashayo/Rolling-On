@@ -2302,6 +2302,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1990520737181440633}
+  - component: {fileID: 1598412405726090438}
   m_Layer: 0
   m_Name: WHEELS
   m_TagString: Untagged
@@ -2327,6 +2328,35 @@ Transform:
   - {fileID: 2226011577971188461}
   m_Father: {fileID: 7118522261708352977}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1598412405726090438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8305941237607044751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70360b1be48c84d4b94b73b95baad681, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wheels:
+  - wheelModel: {fileID: 8153503804689132901}
+    wheelCollider: {fileID: 1806797146712280060}
+    WheelEffectObj: {fileID: 3615474317569327213}
+    axe1: 0
+  - wheelModel: {fileID: 5818478375575188204}
+    wheelCollider: {fileID: 7238448189562823272}
+    WheelEffectObj: {fileID: 1390185966382347671}
+    axe1: 0
+  - wheelModel: {fileID: 5804765163908910987}
+    wheelCollider: {fileID: 5672405779963970901}
+    WheelEffectObj: {fileID: 4091190260954557396}
+    axe1: 1
+  - wheelModel: {fileID: 8377019161085370647}
+    wheelCollider: {fileID: 7800308668803257822}
+    WheelEffectObj: {fileID: 2890061256541186707}
+    axe1: 1
 --- !u!1 &8377019161085370647
 GameObject:
   m_ObjectHideFlags: 0

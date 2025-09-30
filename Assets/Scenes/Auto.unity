@@ -119,9 +119,44 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &37335132 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5818478375575188204, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &411124806 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8153503804689132901, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!146 &451881605 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 5672405779963970901, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &534688963 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4091190260954557396, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!146 &934018062 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 7800308668803257822, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1104656676 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4522132163902742144, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!146 &1288490900 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 1806797146712280060, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1376820472 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2890061256541186707, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
   m_PrefabInstance: {fileID: 8068439096639160364}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1390329967
@@ -245,6 +280,16 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!146 &1687086985 stripped
+WheelCollider:
+  m_CorrespondingSourceObject: {fileID: 7238448189562823272, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1720993609 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5804765163908910987, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1738654321
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,6 +554,21 @@ MonoBehaviour:
   moveOffset: {x: 0, y: 5, z: -20}
   rotOffset: {x: 0, y: 0, z: 0}
   carTarget: {fileID: 8645276144261414597}
+--- !u!1 &1833497758 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1390185966382347671, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1913881401 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8377019161085370647, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1965852212 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3615474317569327213, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  m_PrefabInstance: {fileID: 8068439096639160364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8068439096639160364
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -595,7 +655,23 @@ MonoBehaviour:
   turnSensitivity: 1
   maxSteerAngle: 30
   _centerOfMass: {x: 0, y: 0, z: -100}
-  wheels: []
+  wheels:
+  - wheelModel: {fileID: 411124806}
+    wheelCollider: {fileID: 1288490900}
+    WheelEffectObj: {fileID: 1965852212}
+    axe1: 0
+  - wheelModel: {fileID: 37335132}
+    wheelCollider: {fileID: 1687086985}
+    WheelEffectObj: {fileID: 1833497758}
+    axe1: 0
+  - wheelModel: {fileID: 1913881401}
+    wheelCollider: {fileID: 934018062}
+    WheelEffectObj: {fileID: 1376820472}
+    axe1: 1
+  - wheelModel: {fileID: 1720993609}
+    wheelCollider: {fileID: 451881605}
+    WheelEffectObj: {fileID: 534688963}
+    axe1: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

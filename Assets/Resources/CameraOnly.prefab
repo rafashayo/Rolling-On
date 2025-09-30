@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5279490657601192509}
   - component: {fileID: 7838847850067349904}
   - component: {fileID: 150450681368426893}
-  - component: {fileID: 127565721194175955}
   m_Layer: 0
   m_Name: CameraOnly
   m_TagString: Untagged
@@ -138,20 +137,3 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!114 &127565721194175955
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5308254259043627881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52f612d8c25ec024ba23ba41a3cfce70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSmoothness: 0
-  rotSmoothness: 0
-  moveOffset: {x: 0, y: 0, z: 0}
-  rotOffset: {x: 0, y: 0, z: 0}
-  carTarget: {fileID: 4706126643638104410, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}

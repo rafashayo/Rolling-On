@@ -62,11 +62,11 @@ MonoBehaviour:
   - wheelModel: {fileID: 0}
     wheelCollider: {fileID: 0}
     WheelEffectObj: {fileID: 0}
-    axe1: 0
+    axe1: 1
   - wheelModel: {fileID: 0}
     wheelCollider: {fileID: 0}
     WheelEffectObj: {fileID: 0}
-    axe1: 0
+    axe1: 1
 --- !u!54 &-7691770991986169376
 Rigidbody:
   m_ObjectHideFlags: 0

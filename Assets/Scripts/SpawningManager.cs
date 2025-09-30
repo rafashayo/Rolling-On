@@ -18,20 +18,21 @@ public class CarSpawnHandler : MonoBehaviourPunCallbacks
         {
             //carModel.SetActive(true);
             //INSTANTIATE CAMERACONTROLLER
-            GameObject mycamera = Instantiate(playerCameraPF, Vector3.zero, Quaternion.identity);
+            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.79f, 3.4f, -16.5f), Quaternion.identity);
             //ASIGNO CAMERACONTROLLER
             mycamera.transform.SetParent(carModel.transform, false);
             //INSTANTIATE CONTROLLER
             CarController controladorCar = Instantiate(carControllerPF, Vector3.zero, Quaternion.identity);
             //ASIGNO
             controladorCar.transform.SetParent(carModel.transform, false);
+            controladorCar.AssignWheels();
             //asigno valores
         }
         else
         {
             // Jugadores que no son Master → solo cámara
             //carModel.SetActive(false);
-            GameObject mycamera = Instantiate(playerCameraPF, Vector3.zero, Quaternion.identity);
+            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(0.79f, 3.4f, -16.5f), Quaternion.identity);
             //ASIGNO CAMERACONTROLLER
             mycamera.transform.SetParent(carModel.transform, false);
             //INSTANTIATE CONTROLLER

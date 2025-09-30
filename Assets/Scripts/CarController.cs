@@ -139,4 +139,8 @@ public class CarController : MonoBehaviour
             }
         }
     }
+    public void AssignWheels()
+    {
+        wheels = GameObject.FindFirstObjectByType<wheelMaster>().wheels;
+    }
 }

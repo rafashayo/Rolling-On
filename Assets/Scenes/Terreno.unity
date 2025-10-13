@@ -572,6 +572,14 @@ MonoBehaviour:
   - {fileID: 292114954}
   floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
   player: {fileID: 0}
+  decorPrefabs:
+  - {fileID: 1395934239629260890, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+  decorPerTile: 2
+  decorChance: 0.5
+  decorRadius: 5
+  decorRandomYaw: 1
+  roadHalfWidth: 5
+  decorClearMargin: 2
   initialPieces: 6
   triggerDistance: 120
   roadHeight: 0.01
@@ -614,7 +622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1718198822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -636,6 +644,13 @@ MonoBehaviour:
   - {fileID: 292114954}
   floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
   player: {fileID: 0}
+  decorPrefabs: []
+  decorPerTile: 2
+  decorChance: 0.5
+  decorRadius: 5
+  decorRandomYaw: 1
+  roadHalfWidth: 5
+  decorClearMargin: 2
   initialPieces: 5
   triggerDistance: 60
   roadHeight: 0.01
@@ -1153,6 +1168,63 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1001 &4406705431629107600
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 341.70267
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 431.51398
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 132052492297347505, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1395934239629260890, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+      propertyPath: m_Name
+      value: Arbol
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
 --- !u!1001 &4954227826942580733
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1476,3 +1548,4 @@ SceneRoots:
   - {fileID: 265128225}
   - {fileID: 963965595}
   - {fileID: 1464585941}
+  - {fileID: 4406705431629107600}

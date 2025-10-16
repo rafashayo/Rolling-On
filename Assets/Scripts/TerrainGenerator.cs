@@ -36,6 +36,10 @@ public class TrackGenerator : MonoBehaviour
     int lastIndex = -1;
     bool halted = false;
 
+    // [GLOBAL FLOOR] cachea el "floor" único de la escena
+    Transform _globalFloor;
+    Collider  _globalFloorCol;
+
     void Start()
     {
         if (piecePrefabs == null || piecePrefabs.Length == 0)
@@ -63,6 +67,16 @@ public class TrackGenerator : MonoBehaviour
         nextPos = Vector3.zero;
         nextRot = Quaternion.identity;
         lastSocketEnd = null;
+
+        // [GLOBAL FLOOR] localizar GameObject llamado exactamente "floor"
+        var gf = GameObject.Find("floor");
+        if (gf)
+        {
+            _globalFloor = gf.transform;
+            _globalFloorCol = gf.GetComponent<Collider>();
+            if (_globalFloorCol == null)
+                Debug.LogWarning("El objeto 'floor' no tiene Collider. El raycast no podrá apoyarse.");
+        }
 
         int n = Mathf.Max(1, initialPieces);
         for (int i = 0; i < n && !halted; i++)
@@ -155,27 +169,70 @@ public class TrackGenerator : MonoBehaviour
                 fwd.Normalize();
                 Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
 
-                // Definir área total del tramo
-                float lateralRange = floorSideTiles * floorTileSpacing * 2f;
-                int totalDecor = Mathf.RoundToInt(length / floorTileSpacing * floorSideTiles * decorPerTile * 2f);
+                // Densidad basada en spacing: barrido por "tiles virtuales"
+                int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
+                float halfAlong = floorTileSpacing * 0.5f;
+                float halfLateral = floorTileSpacing * 0.5f;
 
-                for (int i = 0; i < totalDecor; i++)
+                for (int f = 0; f < forwardTiles; f++)
                 {
-                    if (Random.value > decorChance) continue;
+                    float alongBase = Mathf.Clamp((f + 0.5f) * floorTileSpacing, 0f, length - 0.01f);
+                    Vector3 basePos = startW + fwd * alongBase;
 
-                    float along = Random.Range(0f, length);
-                    float lateral = Random.Range(-lateralRange, lateralRange);
-                    Vector3 pos = startW + fwd * along + right * lateral;
-                    pos.y = floorHeight;
+                    for (int s = -floorSideTiles; s <= floorSideTiles; s++)
+                    {
+                        Vector3 colCenter = basePos + right * (s * floorTileSpacing);
 
-                    var prefabDeco = decorPrefabs[Random.Range(0, decorPrefabs.Length)];
-                    Quaternion rot = decorRandomYaw
-                        ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)
-                        : Quaternion.identity;
+                        for (int k = 0; k < decorPerTile; k++)
+                        {
+                            if (Random.value > decorChance) continue;
 
-                    var deco = Instantiate(prefabDeco, pos, rot);
-                    deco.transform.localScale = prefabDeco.transform.localScale;
-                    deco.transform.SetParent(t, true);
+                            // Offset aleatorio dentro del tile virtual
+                            float offAlong   = Random.Range(-halfAlong,   halfAlong);
+                            float offLateral = Random.Range(-halfLateral, halfLateral);
+
+                            Vector3 pos = colCenter + fwd * offAlong + right * offLateral;
+
+                            // [CURVA ROBUST] corredor libre siguiendo curvatura
+                            float alongReal = Mathf.Clamp(Vector3.Dot(pos - startW, fwd), 0f, length);
+                            Vector3 centerAtAlong = startW + fwd * alongReal;
+                            float lateralFromCenter = Mathf.Abs(Vector3.Dot(pos - centerAtAlong, right));
+                            if (lateralFromCenter < (roadHalfWidth + decorClearMargin))
+                                continue;
+
+                            // [GLOBAL FLOOR] apoyar sólo si pega sobre el "floor" global (si existe)
+                            Vector3 rayOrigin = pos + Vector3.up * 50f;
+                            if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 200f, ~0, QueryTriggerInteraction.Ignore))
+                            {
+                                if (_globalFloorCol != null)
+                                {
+                                    if (hit.collider != _globalFloorCol)
+                                        continue; // no cayó sobre el floor global
+                                }
+                                // Si no hay floor global, igual apoyamos en lo que haya
+                                pos.y = hit.point.y;
+                            }
+                            else
+                            {
+                                // Sin hit: si hay floor global, descartamos; si no, usamos floorHeight
+                                if (_globalFloorCol != null) continue;
+                                pos.y = floorHeight;
+                            }
+
+                            // Evitar pequeñas superposiciones con colliders (conservador)
+                            if (Physics.CheckSphere(pos + Vector3.up * 0.05f, 0.15f, ~0, QueryTriggerInteraction.Ignore))
+                                continue;
+
+                            var prefabDeco = decorPrefabs[Random.Range(0, decorPrefabs.Length)];
+                            Quaternion rot = decorRandomYaw
+                                ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)
+                                : Quaternion.identity;
+
+                            var deco = Instantiate(prefabDeco, pos, rot);
+                            deco.transform.localScale = prefabDeco.transform.localScale;
+                            deco.transform.SetParent(t, true);
+                        }
+                    }
                 }
             }
         }

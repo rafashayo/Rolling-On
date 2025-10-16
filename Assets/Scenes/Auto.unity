@@ -581,6 +581,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4486921696020138068, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+      propertyPath: m_Mass
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4522132163902742144, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
       propertyPath: m_Name
       value: Car
@@ -650,10 +654,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b90e5700e161427498fbf717136e4477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAcceleration: 30
-  brakeAcceleration: 50
+  maxAcceleration: 125
+  brakeAcceleration: 140
   turnSensitivity: 1
-  maxSteerAngle: 30
+  maxSteerAngle: 50
   _centerOfMass: {x: 0, y: 0, z: -100}
   wheels:
   - wheelModel: {fileID: 411124806}

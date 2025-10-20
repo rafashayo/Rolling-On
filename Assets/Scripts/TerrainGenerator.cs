@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 
 public class TrackGenerator : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class TrackGenerator : MonoBehaviour
     public GameObject[] decorPrefabs;
     public int decorPerTile = 2;
     [Range(0f, 1f)] public float decorChance = 0.5f;
-    public float decorRadius = 5f;
+    public float decorRadius = 205f;
     public bool decorRandomYaw = true;
 
     public float roadHalfWidth = 5f;
@@ -39,6 +40,13 @@ public class TrackGenerator : MonoBehaviour
     // [GLOBAL FLOOR] cachea el "floor" único de la escena
     Transform _globalFloor;
     Collider  _globalFloorCol;
+
+    // [MESH FLOOR] acumuladores de malla
+    MeshFilter _floorMF;
+    Mesh       _floorMesh;
+    readonly List<Vector3> _floorVerts = new List<Vector3>(4096);
+    readonly List<int>     _floorTris  = new List<int>(8192);
+    readonly List<Vector2> _floorUVs   = new List<Vector2>(4096);
 
     void Start()
     {
@@ -74,8 +82,30 @@ public class TrackGenerator : MonoBehaviour
         {
             _globalFloor = gf.transform;
             _globalFloorCol = gf.GetComponent<Collider>();
-            if (_globalFloorCol == null)
-                Debug.LogWarning("El objeto 'floor' no tiene Collider. El raycast no podrá apoyarse.");
+            // [MESH FLOOR] asegurar MeshFilter/MeshRenderer y un Mesh vacío
+            _floorMF = gf.GetComponent<MeshFilter>();
+            if (_floorMF == null) _floorMF = gf.gameObject.AddComponent<MeshFilter>();
+            var mr = gf.GetComponent<MeshRenderer>();
+            if (mr == null) mr = gf.gameObject.AddComponent<MeshRenderer>();
+            if (mr.sharedMaterial == null)
+            {
+                var sh = Shader.Find("Standard");
+                mr.sharedMaterial = new Material(sh);
+            }
+            _floorMesh = new Mesh { name = "FloorCombinedMesh" };
+            _floorMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32; // por si crece
+            _floorMF.sharedMesh = _floorMesh;
+            // inicial vacío
+            _floorVerts.Clear(); _floorTris.Clear(); _floorUVs.Clear();
+            _floorMesh.SetVertices(_floorVerts);
+            _floorMesh.SetTriangles(_floorTris, 0, true);
+            _floorMesh.SetUVs(0, _floorUVs);
+            _floorMesh.RecalculateNormals();
+            _floorMesh.RecalculateBounds();
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró GameObject llamado 'floor'. El mesh combinado no se construirá.");
         }
 
         int n = Mathf.Max(1, initialPieces);
@@ -122,40 +152,40 @@ public class TrackGenerator : MonoBehaviour
         if (roadHeight != 0f)
             t.position = new Vector3(t.position.x, roadHeight, t.position.z);
 
-        // ---- Floor alrededor del tramo ----
-        if (floorPrefab)
+// ---- [MESH FLOOR] Generación de un único QUAD 100x100 por tramo ----
+if (_globalFloor)
+{
+    Vector3 startW = start.position;
+    Vector3 endW   = end.position;
+    Vector3 fwd    = (endW - startW); fwd.y = 0f;
+    float length   = fwd.magnitude;
+    if (length > 0.01f)
+    {
+        fwd /= length;
+        Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
+
+        // === Elegí el centro del floor ===
+        // Opción A: centro geométrico del tramo
+        Vector3 center = (startW + endW) * 0.5f;
+        // Opción B: en el SocketStart del tramo -> descomentá y comentá la línea de arriba
+        // Vector3 center = startW;
+
+        center.y = floorHeight;
+
+        // Un único quad de 100 (largo) x 100 (ancho), alineado al tramo
+        AddFloorQuad_World(center, fwd, right, 3000f, 3000f);
+
+        // Actualizamos el mesh una vez por tramo
+        RebuildFloorMesh();
+    }
+}
+
+        else
         {
-            Vector3 startW = start.position;
-            Vector3 endW = end.position;
-            Vector3 fwd = (endW - startW);
-            fwd.y = 0f;
-            float length = fwd.magnitude;
-            if (length > 0.01f)
-            {
-                fwd /= length;
-                Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
-                int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
-
-                for (int f = 0; f < forwardTiles; f++)
-                {
-                    float along = (f + 0.5f) * floorTileSpacing;
-                    Vector3 basePos = startW + fwd * Mathf.Min(along, length - 0.01f);
-
-                    for (int s = -floorSideTiles; s <= floorSideTiles; s++)
-                    {
-                        if (s == 0) continue; // evita centro
-                        Vector3 pos = basePos + right * (s * floorTileSpacing);
-                        pos.y = floorHeight;
-                        Quaternion rot = rotateFloorWithRoad ? Quaternion.LookRotation(fwd, Vector3.up) : Quaternion.identity;
-
-                        var tile = Instantiate(floorPrefab, pos, rot);
-                        tile.transform.localScale = floorPrefab.transform.localScale;
-                        tile.transform.SetParent(t, true);
-                    }
-                }
-            }
+            // Si no hay "floor" global, se comporta como antes (opcional: dejar vacío)
+            // (Dejamos vacío para cumplir "generación en 'floor'" solamente si existe)
         }
-        // ------------------------------------------------------------
+        // ------------------------------------------------------------------------
 
         // 🌲 NUEVO: decoraciones por todo el tramo (no solo costados)
         if (decorPrefabs != null && decorPrefabs.Length > 0 && decorPerTile > 0 && decorChance > 0f)
@@ -209,12 +239,10 @@ public class TrackGenerator : MonoBehaviour
                                     if (hit.collider != _globalFloorCol)
                                         continue; // no cayó sobre el floor global
                                 }
-                                // Si no hay floor global, igual apoyamos en lo que haya
                                 pos.y = hit.point.y;
                             }
                             else
                             {
-                                // Sin hit: si hay floor global, descartamos; si no, usamos floorHeight
                                 if (_globalFloorCol != null) continue;
                                 pos.y = floorHeight;
                             }
@@ -245,6 +273,56 @@ public class TrackGenerator : MonoBehaviour
         Destroy(inst, pieceLifetime);
         lastIndex = idx;
         return true;
+    }
+
+    // [MESH FLOOR] añade un quad en el mesh del "floor" (coordenadas en mundo)
+    void AddFloorQuad_World(Vector3 centerW, Vector3 fwd, Vector3 right, float sizeFwd, float sizeRight)
+    {
+        if (!_globalFloor) return;
+
+        float hf = sizeFwd  * 0.5f;
+        float hr = sizeRight * 0.5f;
+
+        // Esquinas en mundo (plano XZ)
+        Vector3 p00 = centerW - right * hr - fwd * hf; // atrás-izq
+        Vector3 p01 = centerW - right * hr + fwd * hf; // adelante-izq
+        Vector3 p11 = centerW + right * hr + fwd * hf; // adelante-der
+        Vector3 p10 = centerW + right * hr - fwd * hf; // atrás-der
+
+        p00.y = p01.y = p11.y = p10.y = floorHeight;
+
+        // Pasamos a espacio local del "floor"
+        int baseIndex = _floorVerts.Count;
+        _floorVerts.Add(_globalFloor.InverseTransformPoint(p00));
+        _floorVerts.Add(_globalFloor.InverseTransformPoint(p01));
+        _floorVerts.Add(_globalFloor.InverseTransformPoint(p11));
+        _floorVerts.Add(_globalFloor.InverseTransformPoint(p10));
+
+        // UVs simples por quad (tiling 0..1)
+        _floorUVs.Add(new Vector2(0, 0));
+        _floorUVs.Add(new Vector2(0, 1));
+        _floorUVs.Add(new Vector2(1, 1));
+        _floorUVs.Add(new Vector2(1, 0));
+
+        // Triángulos (sentido horario visto desde arriba)
+        _floorTris.Add(baseIndex + 0);
+        _floorTris.Add(baseIndex + 1);
+        _floorTris.Add(baseIndex + 2);
+        _floorTris.Add(baseIndex + 0);
+        _floorTris.Add(baseIndex + 2);
+        _floorTris.Add(baseIndex + 3);
+    }
+
+    // [MESH FLOOR] vuelca los buffers al Mesh
+    void RebuildFloorMesh()
+    {
+        if (_floorMesh == null) return;
+        _floorMesh.Clear();
+        _floorMesh.SetVertices(_floorVerts);
+        _floorMesh.SetTriangles(_floorTris, 0, true);
+        _floorMesh.SetUVs(0, _floorUVs);
+        _floorMesh.RecalculateNormals();
+        _floorMesh.RecalculateBounds();
     }
 
     int ChooseIndex()

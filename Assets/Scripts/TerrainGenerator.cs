@@ -152,7 +152,7 @@ public class TrackGenerator : MonoBehaviour
         if (roadHeight != 0f)
             t.position = new Vector3(t.position.x, roadHeight, t.position.z);
 
-// ---- [MESH FLOOR] Generación de un único QUAD 100x100 por tramo ----
+// ---- [MESH FLOOR] Generación de grilla alrededor del floor (centrada por tramo o SocketStart) ----
 if (_globalFloor)
 {
     Vector3 startW = start.position;
@@ -164,21 +164,41 @@ if (_globalFloor)
         fwd /= length;
         Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
 
-        // === Elegí el centro del floor ===
-        // Opción A: centro geométrico del tramo
+        // === Centro de la grilla ===
+        // A) centro del tramo:
         Vector3 center = (startW + endW) * 0.5f;
-        // Opción B: en el SocketStart del tramo -> descomentá y comentá la línea de arriba
+        // B) ó en el SocketStart:
         // Vector3 center = startW;
 
         center.y = floorHeight;
 
-        // Un único quad de 100 (largo) x 100 (ancho), alineado al tramo
-        AddFloorQuad_World(center, fwd, right, 3000f, 3000f);
+        // Tamaño de cada tile de la grilla
+        float tileSizeFwd  = floorTileSpacing;
+        float tileSizeSide = floorTileSpacing;
+
+        // Si querés tiles exactos de 100x100, descomentá:
+        tileSizeFwd = 3000f; tileSizeSide = 3000f;
+
+        // Radio de la grilla (número de tiles a cada lado del centro)
+        int side = Mathf.Max(0, floorSideTiles);
+
+        // Genera un bloque (2*side+1) x (2*side+1) centrado en 'center'
+        for (int iz = -side; iz <= side; iz++)
+        {
+            for (int ix = -side; ix <= side; ix++)
+            {
+                Vector3 tileCenter = center + fwd * (iz * tileSizeFwd) + right * (ix * tileSizeSide);
+                tileCenter.y = floorHeight;
+
+                AddFloorQuad_World(tileCenter, fwd, right, tileSizeFwd, tileSizeSide);
+            }
+        }
 
         // Actualizamos el mesh una vez por tramo
         RebuildFloorMesh();
     }
 }
+
 
         else
         {

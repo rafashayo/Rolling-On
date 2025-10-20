@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 6981423773562365079}
   - component: {fileID: 333093452540860932}
   - component: {fileID: -7548660403588193371}
+  - component: {fileID: 5072449081424940955}
   m_Layer: 0
   m_Name: Recta curvada
   m_TagString: Untagged
@@ -137,11 +138,32 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 8058480687872903535, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+--- !u!65 &5072449081424940955
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8336902989485034007}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 36.535885, y: 0.0000008570742, z: 31.565922}
+  m_Center: {x: -2.1176226, y: 0.000000028569133, z: -34.612404}
 --- !u!1 &8552820849061462040
 GameObject:
   m_ObjectHideFlags: 0

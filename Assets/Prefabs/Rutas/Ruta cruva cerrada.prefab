@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5418830526212963197}
   - component: {fileID: 7529446256830785014}
   - component: {fileID: -4656960729703936149}
+  - component: {fileID: 2248527218584517267}
   m_Layer: 0
   m_Name: Ruta cruva cerrada
   m_TagString: Untagged
@@ -106,11 +107,32 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -8424065724000751472, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+--- !u!65 &2248527218584517267
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3008972113100629016}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 43.7653, y: 0.000000369948, z: 36.95686}
+  m_Center: {x: 5.6987767, y: -0.000000020552662, z: 2.2438867}
 --- !u!1 &3685315387772971902
 GameObject:
   m_ObjectHideFlags: 0

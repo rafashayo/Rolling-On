@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 7523005081414440301}
   - component: {fileID: 6847420872364208416}
   - component: {fileID: 3565443109766107165}
+  - component: {fileID: 2814903590806531877}
   m_Layer: 0
   m_Name: Ruta casi abierta
   m_TagString: Untagged
@@ -137,11 +138,32 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 5095867617140627920, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+--- !u!65 &2814903590806531877
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2112095987735343435}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 33.74023, y: 0.00000040887625, z: 22.271025}
+  m_Center: {x: 3.363225, y: 0.000000015726016, z: -29.540249}
 --- !u!1 &8876776979516606466
 GameObject:
   m_ObjectHideFlags: 0

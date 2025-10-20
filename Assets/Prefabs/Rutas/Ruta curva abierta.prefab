@@ -74,6 +74,7 @@ GameObject:
   - component: {fileID: 7706230390039705669}
   - component: {fileID: 6350359472495896029}
   - component: {fileID: 1318757277872057552}
+  - component: {fileID: 7151206536392222757}
   m_Layer: 0
   m_Name: Ruta curva abierta
   m_TagString: Untagged
@@ -168,8 +169,29 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 965030392559643374, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+--- !u!65 &7151206536392222757
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8849719592859790125}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 25.98273, y: 0.00000040368565, z: 36.4765}
+  m_Center: {x: 7.785067, y: 0, z: -8.242062}

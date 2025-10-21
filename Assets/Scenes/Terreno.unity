@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &9580481 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8104896337404338826, guid: f24c7ea0885681346852456dc523472d, type: 3}
+  m_PrefabInstance: {fileID: 8608378161128679327}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &236623012 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3008972113100629016, guid: 665a4e653ea130c44bc7888f37064a2b, type: 3}
@@ -658,7 +663,9 @@ MonoBehaviour:
   - {fileID: 292114954}
   floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
   player: {fileID: 0}
-  decorPrefabs: []
+  decorPrefabs:
+  - {fileID: 2023860707}
+  - {fileID: 9580481}
   decorPerTile: 2
   decorChance: 0.5
   decorRadius: 5
@@ -774,6 +781,11 @@ Transform:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2112095987735343435, guid: 05840d7ffb81f7043841d26f0f2e7578, type: 3}
   m_PrefabInstance: {fileID: 314783667362367571}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2023860707 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1395934239629260890, guid: f642610cfc4ae594e90b61ba83ede722, type: 3}
+  m_PrefabInstance: {fileID: 4406705431629107600}
   m_PrefabAsset: {fileID: 0}
 --- !u!23 &64039825788854011
 MeshRenderer:

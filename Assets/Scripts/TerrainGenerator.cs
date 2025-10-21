@@ -1,5 +1,7 @@
-using UnityEngine;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using static CarController;
 
 public class TrackGenerator : MonoBehaviour
 {
@@ -241,4 +243,6 @@ public class TrackGenerator : MonoBehaviour
         DestroyImmediate(temp);
         return ok;
     }
+
+    
 }

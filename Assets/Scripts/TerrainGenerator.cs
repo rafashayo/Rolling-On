@@ -1,7 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using static CarController;
+using System.Linq;
 
 public class TrackGenerator : MonoBehaviour
 {
@@ -201,16 +199,59 @@ public class TrackGenerator : MonoBehaviour
     }
 
     int ChooseIndex()
+{
+    // Si no hay al menos 3 prefabs, usamos la lógica original
+    if (piecePrefabs.Length < 3)
     {
-        int idx = Random.Range(0, piecePrefabs.Length);
+        int idxFallback = Random.Range(0, piecePrefabs.Length);
         if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
         {
             int safety = 10;
-            while (idx == lastIndex && safety-- > 0)
-                idx = Random.Range(0, piecePrefabs.Length);
+            while (idxFallback == lastIndex && safety-- > 0)
+                idxFallback = Random.Range(0, piecePrefabs.Length);
         }
-        return idx;
+        return idxFallback;
     }
+
+    const float pElement2 = 0.80f; // 80%
+    int idx;
+
+    if (Random.value < pElement2)
+    {
+        // Forzar Element 2 (índice 2)
+        idx = 2;
+    }
+    else
+    {
+        // Elegir cualquiera EXCEPTO 2
+        if (piecePrefabs.Length == 1) idx = 0;
+        else
+        {
+            idx = Random.Range(0, piecePrefabs.Length - 1); // [0, len-2]
+            if (idx >= 2) idx += 1; // salteamos el 2
+        }
+    }
+
+    // Respetar anti-repetición existente
+    if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
+    {
+        int safety = 10;
+        while (idx == lastIndex && safety-- > 0)
+        {
+            // Re-samplea con el mismo sesgo
+            if (Random.value < pElement2)
+                idx = 2;
+            else
+            {
+                int alt = Random.Range(0, piecePrefabs.Length - 1);
+                idx = (alt >= 2) ? alt + 1 : alt;
+            }
+        }
+    }
+
+    return idx;
+}
+
 
     Transform FindExactSocket(Transform root, string exactName)
     {
@@ -243,6 +284,4 @@ public class TrackGenerator : MonoBehaviour
         DestroyImmediate(temp);
         return ok;
     }
-
-    
 }

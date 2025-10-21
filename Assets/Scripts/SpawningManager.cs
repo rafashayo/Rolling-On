@@ -11,28 +11,33 @@ public class CarSpawnHandler : MonoBehaviourPunCallbacks
     {
         //PHOTONINSTANTIANTIATE CARMODEL
 
-        carModel = PhotonNetwork.Instantiate("Car", new Vector3(Random.Range(11, 12), 1, 0), Quaternion.identity);
-
-        // Primer jugador (MasterClient) tiene auto + cámara
-               
-            //carModel.SetActive(true);
-            //INSTANTIATE CAMERACONTROLLER
-            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.79f, 3.4f, -16.5f), Quaternion.identity);
-            //ASIGNO CAMERACONTROLLER
-            mycamera.transform.SetParent(carModel.transform, false);
-            //INSTANTIATE CONTROLLER
+        if (PhotonNetwork.IsMasterClient)
+        {
+            carModel = PhotonNetwork.Instantiate("Car", new Vector3(Random.Range(11, 12), 1, 120), Quaternion.identity);
             CarController controladorCar = Instantiate(carControllerPF, Vector3.zero, Quaternion.identity);
-            //ASIGNO
             controladorCar.transform.SetParent(carModel.transform, false);
             controladorCar.AssignWheels();
-            //asigno valores
-        
+            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.79f, 3.4f, -16.5f), Quaternion.identity);
+            mycamera.transform.SetParent(carModel.transform, false);
+        }
+        else { 
+            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(0.79f, 3.4f, -16.5f), Quaternion.identity);
+            mycamera.transform.SetParent(carModel.transform, false);
 
-       
+        }
+
+        // Primer jugador (MasterClient) tiene auto + cámara
+        //carModel.SetActive(true);
+        //INSTANTIATE CAMERACONTROLLER
+        //ASIGNO CAMERACONTROLLER
+        //INSTANTIATE CONTROLLER
+        //ASIGNO
+        //asigno valores
     }
-    void SpawnSecondCamera()
+    
+   /* void SpawnSecondCamera()
     {
         GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.79f, 3.4f, -16.5f), Quaternion.identity);
 
-    }
+    }*/
 }

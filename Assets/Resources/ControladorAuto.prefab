@@ -48,7 +48,7 @@ MonoBehaviour:
   maxAcceleration: 200
   brakeAcceleration: 150
   turnSensitivity: 1
-  maxSteerAngle: 100
+  maxSteerAngle: 50
   _centerOfMass: {x: 0, y: 0, z: -100}
   wheels:
   - wheelModel: {fileID: 0}

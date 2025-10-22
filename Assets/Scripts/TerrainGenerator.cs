@@ -126,67 +126,93 @@ public class TrackGenerator : MonoBehaviour
         {
             Vector3 startW = start.position;
             Vector3 endW = end.position;
-            Vector3 fwd = (endW - startW);
-            fwd.y = 0f;
+            Vector3 fwd = (endW - startW);  fwd.y = 0f;
             float length = fwd.magnitude;
 
             if (length > 0.01f)
             {
-                fwd /= length;
-                Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
+                // base ortonormal del tramo
+                Vector3 fwdDir = fwd / length;
+                Vector3 rightDir = new Vector3(fwdDir.z, 0f, -fwdDir.x);
+
                 int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
                 float roadClear = roadHalfWidth + decorClearMargin;
 
                 for (int f = 0; f < forwardTiles; f++)
                 {
                     float along = (f + 0.5f) * floorTileSpacing;
-                    Vector3 centerOnAxis = startW + fwd * Mathf.Min(along, length - 0.01f);
+                    Vector3 centerOnAxis = startW + fwdDir * Mathf.Min(along, length - 0.01f);
 
                     for (int s = -floorSideTiles; s <= floorSideTiles; s++)
                     {
                         if (s == 0) continue;
                         float lateral = s * floorTileSpacing;
-                        if (Mathf.Abs(lateral) < roadClear) continue;
+                        if (Mathf.Abs(lateral) < roadClear) continue; // NO piso la ruta
 
-                        Vector3 pos = centerOnAxis + right * lateral;
+                        Vector3 pos = centerOnAxis + rightDir * lateral;
                         pos.y = floorHeight;
-                        Quaternion rot = rotateFloorWithRoad ? Quaternion.LookRotation(fwd, Vector3.up) : Quaternion.identity;
+                        Quaternion rot = rotateFloorWithRoad ? Quaternion.LookRotation(fwdDir, Vector3.up) : Quaternion.identity;
 
                         var tile = Instantiate(floorPrefab, pos, rot);
                         tile.transform.localScale = floorPrefab.transform.localScale;
                         tile.transform.SetParent(t, true);
 
-                        // decor en este tile
-                        if (decorPrefabs != null && decorPrefabs.Length > 0 && decorPerTile > 0 && decorChance > 0f)
+                        // ======= DECORACIÓN: alrededor del camino SIN tocar la ruta =======
+                        if (decorPrefabs != null && decorPrefabs.Length > 0 && decorPerTile > 0 && decorRadius > 0f && decorChance > 0f)
                         {
-                            for (int k = 0; k < decorPerTile; k++)
+                            int toPlace = Random.Range(0, decorPerTile + 1);
+                            int placed = 0;
+                            int safety = toPlace * 10;
+
+                            while (placed < toPlace && safety-- > 0)
                             {
-                                if (Random.value < decorChance)
+                                if (Random.value > decorChance) break;
+
+                                // punto aleatorio alrededor del tile (en círculo)
+                                Vector2 rnd = Random.insideUnitCircle * decorRadius;
+                                Vector3 candidate = pos + new Vector3(rnd.x, 0f, rnd.y);
+
+                                // *** MEDICIÓN LATERAL ROBUSTA (sigue la curva) ***
+                                // proyectamos el candidate sobre el eje del tramo, encontramos el centro local exacto y medimos la componente lateral
+                                float alongReal = Mathf.Clamp(Vector3.Dot(candidate - startW, fwdDir), 0f, length);
+                                Vector3 centerAtAlong = startW + fwdDir * alongReal;
+                                float lateralFromAxis = Mathf.Abs(Vector3.Dot(candidate - centerAtAlong, rightDir));
+
+                                // mantener fuera del corredor libre (ruta + margen)
+                                if (lateralFromAxis < roadClear) continue;
+
+                                // evitar capas de ruta por seguridad
+                                if (roadMask.value != 0 && Physics.CheckSphere(candidate + Vector3.up * 0.25f, roadRejectRadius, roadMask))
+                                    continue;
+
+                                // apoyar con raycast
+                                Vector3 rayOrigin = candidate + Vector3.up * 50f;
+                                if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 120f, ~0, QueryTriggerInteraction.Ignore))
                                 {
-                                    Vector2 rnd = Random.insideUnitCircle * decorRadius;
-                                    Vector3 dpos = pos + new Vector3(rnd.x, 0f, rnd.y);
+                                    // si raycast pegó en algo marcado como ruta, descartamos
+                                    bool hitIsRoad = (roadMask.value != 0) && (((1 << hit.collider.gameObject.layer) & roadMask.value) != 0);
+                                    if (hitIsRoad) continue;
 
-                                    float lateralFromAxis = Mathf.Abs(Vector3.Dot(dpos - centerOnAxis, right));
-                                    if (lateralFromAxis < roadClear) continue;
+                                    Vector3 place = hit.point;
 
-                                    Vector3 checkPos = dpos + Vector3.up * 0.5f;
-                                    if (Physics.CheckSphere(checkPos, roadRejectRadius, roadMask)) continue;
-
+                                    var decoPrefab = decorPrefabs[Random.Range(0, decorPrefabs.Length)];
                                     Quaternion drot = decorRandomYaw
                                         ? Quaternion.Euler(0f, Random.Range(0f, 360f), 0f)
                                         : Quaternion.identity;
 
-                                    var prefabDeco = decorPrefabs[Random.Range(0, decorPrefabs.Length)];
-                                    var deco = Instantiate(prefabDeco, dpos, drot);
-                                    deco.transform.localScale = prefabDeco.transform.localScale;
-                                    deco.transform.SetParent(t, true);
+                                    var deco = Instantiate(decoPrefab, place, drot);
+                                    deco.transform.localScale = decoPrefab.transform.localScale;
+                                    deco.transform.SetParent(tile.transform, true);
+
+                                    placed++;
                                 }
                             }
                         }
-                    }
-                }
-            }
-        }
+                        // ===================================================================
+                    } // s
+                } // f
+            } // length
+        } // floorPrefab
         // ------------------------------------------------------------
 
         lastSocketEnd = end;
@@ -199,59 +225,54 @@ public class TrackGenerator : MonoBehaviour
     }
 
     int ChooseIndex()
-{
-    // Si no hay al menos 3 prefabs, usamos la lógica original
-    if (piecePrefabs.Length < 3)
     {
-        int idxFallback = Random.Range(0, piecePrefabs.Length);
+        // Si no hay al menos 3 prefabs, usamos la lógica original
+        if (piecePrefabs.Length < 3)
+        {
+            int idxFallback = Random.Range(0, piecePrefabs.Length);
+            if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
+            {
+                int safety = 10;
+                while (idxFallback == lastIndex && safety-- > 0)
+                    idxFallback = Random.Range(0, piecePrefabs.Length);
+            }
+            return idxFallback;
+        }
+
+        const float pElement2 = 0.80f; // 80%
+        int idx;
+
+        if (Random.value < pElement2)
+        {
+            idx = 2; // Element 2
+        }
+        else
+        {
+            if (piecePrefabs.Length == 1) idx = 0;
+            else
+            {
+                idx = Random.Range(0, piecePrefabs.Length - 1);
+                if (idx >= 2) idx += 1;
+            }
+        }
+
         if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
         {
             int safety = 10;
-            while (idxFallback == lastIndex && safety-- > 0)
-                idxFallback = Random.Range(0, piecePrefabs.Length);
-        }
-        return idxFallback;
-    }
-
-    const float pElement2 = 0.80f; // 80%
-    int idx;
-
-    if (Random.value < pElement2)
-    {
-        // Forzar Element 2 (índice 2)
-        idx = 2;
-    }
-    else
-    {
-        // Elegir cualquiera EXCEPTO 2
-        if (piecePrefabs.Length == 1) idx = 0;
-        else
-        {
-            idx = Random.Range(0, piecePrefabs.Length - 1); // [0, len-2]
-            if (idx >= 2) idx += 1; // salteamos el 2
-        }
-    }
-
-    // Respetar anti-repetición existente
-    if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
-    {
-        int safety = 10;
-        while (idx == lastIndex && safety-- > 0)
-        {
-            // Re-samplea con el mismo sesgo
-            if (Random.value < pElement2)
-                idx = 2;
-            else
+            while (idx == lastIndex && safety-- > 0)
             {
-                int alt = Random.Range(0, piecePrefabs.Length - 1);
-                idx = (alt >= 2) ? alt + 1 : alt;
+                if (Random.value < pElement2)
+                    idx = 2;
+                else
+                {
+                    int alt = Random.Range(0, piecePrefabs.Length - 1);
+                    idx = (alt >= 2) ? alt + 1 : alt;
+                }
             }
         }
+
+        return idx;
     }
-
-    return idx;
-}
-
 
     Transform FindExactSocket(Transform root, string exactName)
     {

@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b90e5700e161427498fbf717136e4477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAcceleration: 200
+  maxAcceleration: 300
   brakeAcceleration: 150
   turnSensitivity: 1
-  maxSteerAngle: 50
+  maxSteerAngle: 35
   _centerOfMass: {x: 0, y: 0, z: 200}
   wheels:
   - wheelModel: {fileID: 0}
@@ -75,7 +75,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6193480554527313499}
   serializedVersion: 5
-  m_Mass: 100
+  m_Mass: 70
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}

@@ -477,13 +477,13 @@ MonoBehaviour:
   decorSeparation: 1.25
   floorMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   roadMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   decorMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   scanInterval: 0.5
 --- !u!4 &710018894
 Transform:

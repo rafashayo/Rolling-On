@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -7691770991986169376}
   m_Layer: 0
   m_Name: ControladorAuto
-  m_TagString: Untagged
+  m_TagString: Car
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45,11 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b90e5700e161427498fbf717136e4477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxAcceleration: 300
-  brakeAcceleration: 150
+  maxAcceleration: 800
+  brakeAcceleration: 900
   turnSensitivity: 1
   maxSteerAngle: 35
-  _centerOfMass: {x: 0, y: 0, z: 200}
+  _centerOfMass: {x: 0, y: -1, z: 200}
   wheels:
   - wheelModel: {fileID: 0}
     wheelCollider: {fileID: 0}

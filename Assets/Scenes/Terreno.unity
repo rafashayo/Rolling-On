@@ -434,6 +434,72 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &710018892
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 710018894}
+  - component: {fileID: 710018893}
+  m_Layer: 0
+  m_Name: DecorSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &710018893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710018892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c37b9677d75f2744b1afea6098f65a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorsRoot: {fileID: 0}
+  floorsRootPath: TrackRuntime/Floors
+  decorPrefabs:
+  - {fileID: 2023860707}
+  - {fileID: 9580481}
+  decorPerTile: 2
+  decorChance: 0.5
+  decorRadius: 5
+  decorRandomYaw: 1
+  roadHalfWidth: 5
+  decorClearMargin: 2
+  decorSeparation: 1.25
+  floorMask:
+    serializedVersion: 2
+    m_Bits: 0
+  roadMask:
+    serializedVersion: 2
+    m_Bits: 0
+  decorMask:
+    serializedVersion: 2
+    m_Bits: 0
+  scanInterval: 0.5
+--- !u!4 &710018894
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 710018892}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 439.01953, y: 0, z: 697.5737}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &730166697 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7563857541312164851, guid: 3adcf08415d6ec2409143fb77e95ba20, type: 3}
@@ -661,32 +727,19 @@ MonoBehaviour:
   - {fileID: 1742567297}
   - {fileID: 236623012}
   - {fileID: 292114954}
-  floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
-  player: {fileID: 0}
-  decorPrefabs:
-  - {fileID: 2023860707}
-  - {fileID: 9580481}
-  decorPerTile: 2
-  decorChance: 0.5
-  decorRadius: 5
-  decorRandomYaw: 1
-  roadMask:
-    serializedVersion: 2
-    m_Bits: 0
-  roadRejectRadius: 2
-  roadHalfWidth: 5
-  decorClearMargin: 2
-  initialPieces: 25
-  triggerDistance: 120
-  roadHeight: 0.01
-  pieceLifetime: 1200
-  avoidImmediateRepeat: 0.7
   startSocketName: SocketStart
   endSocketName: SocketEnd
+  avoidImmediateRepeat: 0.7
+  initialPieces: 25
+  triggerDistance: 120
+  pieceLifetime: 1200
+  roadHeight: 0.01
+  floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
   floorSideTiles: 2
   floorTileSpacing: 20
   floorHeight: 0
   rotateFloorWithRoad: 1
+  player: {fileID: 0}
 --- !u!4 &1692258187
 Transform:
   m_ObjectHideFlags: 0
@@ -738,30 +791,19 @@ MonoBehaviour:
   - {fileID: 1742567297}
   - {fileID: 236623012}
   - {fileID: 292114954}
-  floorPrefab: {fileID: 0}
-  player: {fileID: 0}
-  decorPrefabs: []
-  decorPerTile: 2
-  decorChance: 0.5
-  decorRadius: 5
-  decorRandomYaw: 1
-  roadMask:
-    serializedVersion: 2
-    m_Bits: 0
-  roadRejectRadius: 2
-  roadHalfWidth: 5
-  decorClearMargin: 2
-  initialPieces: 5
-  triggerDistance: 60
-  roadHeight: 0.01
-  pieceLifetime: 1200
-  avoidImmediateRepeat: 0.7
   startSocketName: SocketStart
   endSocketName: SocketEnd
+  avoidImmediateRepeat: 0.7
+  initialPieces: 5
+  triggerDistance: 60
+  pieceLifetime: 1200
+  roadHeight: 0.01
+  floorPrefab: {fileID: 0}
   floorSideTiles: 2
   floorTileSpacing: 20
   floorHeight: 0
   rotateFloorWithRoad: 1
+  player: {fileID: 0}
 --- !u!4 &1718198823
 Transform:
   m_ObjectHideFlags: 0
@@ -1721,3 +1763,4 @@ SceneRoots:
   - {fileID: 4406705431629107600}
   - {fileID: 8608378161128679327}
   - {fileID: 371354033}
+  - {fileID: 710018894}

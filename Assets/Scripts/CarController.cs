@@ -78,7 +78,10 @@ public class CarController : MonoBehaviour
     {
         foreach (var wheel in wheels)
         {
-            wheel.wheelCollider.motorTorque = moveInput * 600f * maxAcceleration * Time.deltaTime;
+            if (wheel.axe1 == Axe1.Rear) // solo las traseras
+                wheel.wheelCollider.motorTorque = moveInput * maxAcceleration * 600;
+            else
+                wheel.wheelCollider.motorTorque = 0;
         }
     }
 

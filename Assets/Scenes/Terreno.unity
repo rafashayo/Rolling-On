@@ -682,7 +682,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cadfa2fb46544e54a863c266a58942d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  carModel: {fileID: 4522132163902742144, guid: 19311c19d02dda74196a5e5dd1826b90, type: 3}
+  carModel: {fileID: 6653972575647878895, guid: 3d855ca0905b4a7439976473469cf472, type: 3}
   playerCameraPF: {fileID: 5308254259043627881, guid: 39909608347c98e4c8bc6212a98ce536, type: 3}
   carControllerPF: {fileID: 8629155084958720865, guid: 51c82437d878c5d4c9873d43c33aac55, type: 3}
 --- !u!1 &1551756905 stripped

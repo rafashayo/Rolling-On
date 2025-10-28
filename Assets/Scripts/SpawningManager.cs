@@ -13,15 +13,15 @@ public class CarSpawnHandler : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient)
         {
-            carModel = PhotonNetwork.Instantiate("Car", new Vector3(Random.Range(11, 12), 1, 120), Quaternion.identity);
+            carModel = PhotonNetwork.Instantiate("CarOne", new Vector3(Random.Range(11, 12), 1, 120), Quaternion.identity);
             CarController controladorCar = Instantiate(carControllerPF, Vector3.zero, Quaternion.identity);
             controladorCar.transform.SetParent(carModel.transform, false);
             controladorCar.AssignWheels();
-            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.79f, 3.4f, -16.5f), Quaternion.identity);
+            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
             mycamera.transform.SetParent(carModel.transform, false);
         }
         else { 
-            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(0.79f, 3.4f, -16.5f), Quaternion.identity);
+            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
             mycamera.transform.SetParent(carModel.transform, false);
 
         }

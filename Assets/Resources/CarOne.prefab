@@ -1096,8 +1096,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7028216412493499127}
+  - component: {fileID: 5925759108914821125}
   m_Layer: 0
-  m_Name: Wheels
+  m_Name: WHEELS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1116,11 +1117,40 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 432740906285803971}
-  - {fileID: 7237607147262365182}
   - {fileID: 1899072566371029306}
+  - {fileID: 7237607147262365182}
+  - {fileID: 432740906285803971}
   m_Father: {fileID: 2702531572849635134}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5925759108914821125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2404173921745221075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70360b1be48c84d4b94b73b95baad681, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wheels:
+  - wheelModel: {fileID: 9143491862873982116}
+    wheelCollider: {fileID: 7171503605654906095}
+    WheelEffectObj: {fileID: 7804482674436957139}
+    axe1: 0
+  - wheelModel: {fileID: 4435861619693193630}
+    wheelCollider: {fileID: 2225172536355835259}
+    WheelEffectObj: {fileID: 5560054230975649321}
+    axe1: 0
+  - wheelModel: {fileID: 7341574472517561459}
+    wheelCollider: {fileID: 3759709531675290182}
+    WheelEffectObj: {fileID: 7396452952849647722}
+    axe1: 1
+  - wheelModel: {fileID: 3483222456077930737}
+    wheelCollider: {fileID: 1645229549248379597}
+    WheelEffectObj: {fileID: 8536615418696321325}
+    axe1: 1
 --- !u!1 &3205426963820593157
 GameObject:
   m_ObjectHideFlags: 0
@@ -2741,7 +2771,7 @@ GameObject:
   m_Component:
   - component: {fileID: 432740906285803971}
   m_Layer: 0
-  m_Name: Meshes
+  m_Name: meshes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3165,7 +3195,7 @@ Rigidbody:
   m_Mass: 150
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: -1, z: -100}
+  m_CenterOfMass: {x: 0, y: -1, z: -50}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:

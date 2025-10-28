@@ -1,233 +1,215 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using System.Linq;
 
 public class TrackGenerator : MonoBehaviour
 {
-    [Header("Road pieces")]
+    [Header("Prefabs y referencias")]
     public GameObject[] piecePrefabs;
-    public string startSocketName = "SocketStart";
-    public string endSocketName   = "SocketEnd";
-    public float avoidImmediateRepeat = 0.7f;
-    public int initialPieces = 3;
-    public float triggerDistance = 60f;
-    public float pieceLifetime = 1200f;
-    public float roadHeight = 0.01f;
-
-    [Header("Floor (suelo)")]
-    public GameObject floorPrefab;
-    public int floorSideTiles = 2;
-    public float floorTileSpacing = 20f;
-    public float floorHeight = 0f;
-    public bool rotateFloorWithRoad = true;
-
-    [Header("Runtime")]
+    public GameObject floorPrefab; // ← tu prefab "floor"
     public Transform player;
 
+    [Header("Configuración de generación")]
+    public int initialPieces = 3;
+    public float triggerDistance = 60f;
+    public float roadHeight = 0.01f;
+    public float pieceLifetime = 1200f;
+    public float avoidImmediateRepeat = 0.7f;
+
+    [Header("Sockets")]
+    public string startSocketName = "SocketStart";
+    public string endSocketName = "SocketEnd";
+
+    [Header("Grass / suelo lateral")]
+    public int floorSideTiles = 2;       // columnas por lado (izq/der)
+    public float floorTileSpacing = 20f; // distancia entre tiles
+    public float floorHeight = 0f;       // altura del grass
+    public bool rotateFloorWithRoad = true;
+
     // Internos
-    private Transform _lastEndSocket;
-    private readonly List<GameObject> _livePieces = new();
-    private readonly List<GameObject> _liveFloors = new();
-    private GameObject _piecesRoot;
-    private GameObject _floorsRoot;
-    private GameObject _root;
+    private Transform lastSocketEnd;
+    private Vector3 nextPos;
+    private Quaternion nextRot = Quaternion.identity;
+    private int lastIndex = -1;
+    private bool halted = false;
 
     void Start()
     {
         if (piecePrefabs == null || piecePrefabs.Length == 0)
         {
-            Debug.LogError("No hay piecePrefabs asignados.");
-            enabled = false;
+            Debug.LogError("Sin prefabs.");
+            halted = true;
             return;
         }
 
-        _root       = new GameObject("TrackRuntime");
-        _piecesRoot = new GameObject("Pieces"); _piecesRoot.transform.SetParent(_root.transform);
-        _floorsRoot = new GameObject("Floors"); _floorsRoot.transform.SetParent(_root.transform);
-
-        // Primer segmento
-        var first = SpawnRoadPiece(piecePrefabs[0], Vector3.zero, Quaternion.identity, true);
-        for (int i = 1; i < initialPieces; i++)
+        // Validar sockets en prefabs
+        for (int i = piecePrefabs.Length - 1; i >= 0; i--)
         {
-            SpawnNextPiece();
+            if (!PrefabHasSockets(piecePrefabs[i]))
+            {
+                Debug.LogError($"Prefab '{piecePrefabs[i].name}' sin {startSocketName}/{endSocketName}. Removido.");
+                piecePrefabs = piecePrefabs.Where((p, idx) => idx != i).ToArray();
+            }
+        }
+
+        if (piecePrefabs.Length == 0)
+        {
+            Debug.LogError("No hay prefabs válidos con sockets.");
+            halted = true;
+            return;
+        }
+
+        nextPos = Vector3.zero;
+        nextRot = Quaternion.identity;
+        lastSocketEnd = null;
+
+        int n = Mathf.Max(1, initialPieces);
+        for (int i = 0; i < n && !halted; i++)
+        {
+            if (!TrySpawnNext())
+            {
+                halted = true;
+                break;
+            }
         }
     }
 
     void Update()
     {
-        if (!player || _lastEndSocket == null) return;
+        if (halted || !player) return;
 
-        float dist = Vector3.Distance(player.position, _lastEndSocket.position);
-        if (dist < triggerDistance)
-        {
-            SpawnNextPiece();
-        }
+        float d = lastSocketEnd
+            ? Vector3.Distance(player.position, lastSocketEnd.position)
+            : Vector3.Distance(player.position, nextPos);
 
-        // Limpieza por lifetime
-        CleanupOld(_livePieces, pieceLifetime);
-        CleanupOrphans(_liveFloors);
+        if (d < triggerDistance)
+            TrySpawnNext(); // genera 1 por frame
     }
 
-    #region Road + Floor
-
-    GameObject SpawnNextPiece()
+    bool TrySpawnNext()
     {
-        // Selección evitando repetir el último prefab con cierta probabilidad
-        GameObject prefab;
-        if (piecePrefabs.Length == 1)
+        if (piecePrefabs.Length == 0) return false;
+
+        int idx = ChooseIndex();
+        var prefab = piecePrefabs[idx];
+        var inst = Instantiate(prefab);
+        var t = inst.transform;
+
+        var start = FindExactSocket(inst.transform, startSocketName);
+        var end = FindExactSocket(inst.transform, endSocketName);
+
+        if (!start || !end)
         {
-            prefab = piecePrefabs[0];
+            Debug.LogError($"Instancia '{prefab.name}' sin sockets {startSocketName}/{endSocketName}. Removido del pool.");
+            Destroy(inst);
+            piecePrefabs = piecePrefabs.Where(p => p != prefab).ToArray();
+            lastIndex = -1;
+            return piecePrefabs.Length > 0;
         }
+
+        // Alinear tramo nuevo
+        if (lastSocketEnd == null)
+            AlignByStart(t, start, nextPos, nextRot);
         else
+            AlignStartToEnd(t, start, lastSocketEnd);
+
+        if (roadHeight != 0f)
+            t.position = new Vector3(t.position.x, roadHeight, t.position.z);
+
+        // ---- Grass alrededor del tramo ----
+        if (floorPrefab)
         {
-            var candidates = piecePrefabs.ToList();
-            if (_livePieces.Count > 0 && Random.value < avoidImmediateRepeat)
+            Vector3 startW = start.position;
+            Vector3 endW = end.position;
+            Vector3 fwd = (endW - startW);
+            fwd.y = 0f;
+
+            float length = fwd.magnitude;
+            if (length > 0.01f)
             {
-                var last = _livePieces.Last();
-                candidates.RemoveAll(p => p.name == last.name.Replace("(Clone)", "").Trim());
-            }
-            prefab = candidates[Random.Range(0, candidates.Count)];
-        }
+                fwd /= length;
+                Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
+                int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
 
-        // Alinear con el último end socket
-        if (_lastEndSocket == null)
-        {
-            return SpawnRoadPiece(prefab, Vector3.zero, Quaternion.identity, false);
-        }
-        else
-        {
-            Transform endSocketPrev = _lastEndSocket;
-
-            // OJO: si los sockets del prefab están anidados, usar búsqueda recursiva
-            var start = FindInPrefabRecursive(prefab, startSocketName);
-            var end   = FindInPrefabRecursive(prefab, endSocketName);
-            if (!start || !end)
-            {
-                Debug.LogError($"El prefab {prefab.name} no tiene sockets {startSocketName}/{endSocketName}");
-                return null;
-            }
-
-            Quaternion rot = endSocketPrev.rotation * Quaternion.Inverse(start.rotation);
-            Vector3 pos = endSocketPrev.position - (rot * (start.position - prefab.transform.position));
-
-            return SpawnRoadPiece(prefab, pos, rot, false);
-        }
-    }
-
-    GameObject SpawnRoadPiece(GameObject prefab, Vector3 pos, Quaternion rot, bool first)
-    {
-        var go = Instantiate(prefab, pos, rot, _piecesRoot.transform);
-        go.name = $"{prefab.name}";
-
-        // Ajuste leve en Y para que no parpadee con el terreno
-        go.transform.position += Vector3.up * roadHeight;
-
-        // Encuentra sockets en el instanciado (recursivo)
-        Transform startSock = FindChildRecursive(go.transform, startSocketName);
-        Transform endSock   = FindChildRecursive(go.transform, endSocketName);
-        if (!startSock || !endSock)
-        {
-            Debug.LogError($"Instancia {go.name} no tiene sockets {startSocketName}/{endSocketName}");
-        }
-        _lastEndSocket = endSock;
-
-        _livePieces.Add(go);
-
-        // Generar floor tiles a ambos lados de la ruta
-        BuildFloorAroundPiece(go.transform, startSock, endSock);
-
-        return go;
-    }
-
-    void BuildFloorAroundPiece(Transform piece, Transform startSock, Transform endSock)
-    {
-        if (!floorPrefab || floorSideTiles <= 0 || floorTileSpacing <= 0f) return;
-
-        // Dirección de la pieza (de start a end)
-        Vector3 forward = (endSock.position - startSock.position);
-        float length = forward.magnitude;
-        if (length < 0.01f) return;
-        forward.Normalize();
-
-        // Rotación base del floor (opcionalmente la misma que la ruta)
-        Quaternion baseRot = rotateFloorWithRoad ? Quaternion.LookRotation(forward, Vector3.up) : Quaternion.identity;
-
-        // Columna a lo largo de la pieza, distribuyendo tiles cada 'floorTileSpacing'
-        int alongCount = Mathf.Max(1, Mathf.RoundToInt(length / floorTileSpacing));
-        float step = length / alongCount;
-
-        // Vector lateral (perpendicular)
-        Vector3 right = Vector3.Cross(Vector3.up, forward).normalized;
-
-        // Offset lateral mínimo para NO tocar la ruta
-        // (el margen anti-ruta lo aplicará el decorador; aquí solo ubicamos tiles)
-        float minLateral = 0f;
-
-        for (int side = -1; side <= 1; side += 2) // -1 izquierda, 1 derecha
-        {
-            for (int s = 0; s < floorSideTiles; s++)
-            {
-                float lateral = minLateral + (s * floorTileSpacing);
-                for (int i = 0; i < alongCount; i++)
+                for (int f = 0; f < forwardTiles; f++)
                 {
-                    float t = (i + 0.5f) * step;
-                    Vector3 basePos = startSock.position + forward * t + right * (lateral * side);
-                    basePos.y += floorHeight;
+                    float along = (f + 0.5f) * floorTileSpacing;
+                    Vector3 basePos = startW + fwd * Mathf.Min(along, length - 0.01f);
 
-                    var tile = Instantiate(floorPrefab, basePos, baseRot, _floorsRoot.transform);
-                    tile.name = $"FloorTile_{(side<0?"L":"R")}_{s}_{i}";
-                    _liveFloors.Add(tile);
+                    for (int s = -floorSideTiles; s <= floorSideTiles; s++)
+                    {
+                        if (s == 0) continue; // evita pisar la carretera
 
-                    // (Opcional) etiqueta para que el decorador los encuentre fácil
-                    if (!tile.CompareTag("FloorTile")) tile.tag = "FloorTile";
+                        Vector3 pos = basePos + right * (s * floorTileSpacing);
+                        pos.y = floorHeight;
+
+                        Quaternion rot = rotateFloorWithRoad
+                            ? Quaternion.LookRotation(fwd, Vector3.up)
+                            : Quaternion.identity;
+
+                        // parent al tramo para que se limpie junto
+                        Instantiate(floorPrefab, pos, rot, t);
+                    }
                 }
             }
         }
+        // -----------------------------------
+
+        lastSocketEnd = end;
+        nextPos = lastSocketEnd.position;
+        nextRot = lastSocketEnd.rotation;
+
+        Destroy(inst, pieceLifetime);
+        lastIndex = idx;
+        return true;
     }
 
-    #endregion
-
-    #region Utils
-
-    static Transform FindInPrefabRecursive(GameObject prefab, string childName)
+    int ChooseIndex()
     {
-        foreach (var t in prefab.GetComponentsInChildren<Transform>(true))
-            if (t.name == childName) return t;
-        return null;
-    }
+        int idx = Random.Range(0, piecePrefabs.Length);
 
-    static Transform FindChildRecursive(Transform parent, string name)
-    {
-        if (!parent) return null;
-        if (parent.name == name) return parent;
-        foreach (Transform c in parent)
+        if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
         {
-            var r = FindChildRecursive(c, name);
-            if (r) return r;
+            int safety = 10;
+            while (idx == lastIndex && safety-- > 0)
+                idx = Random.Range(0, piecePrefabs.Length);
         }
-        return null;
+
+        return idx;
     }
 
-    void CleanupOld(List<GameObject> list, float lifeSeconds)
+    Transform FindExactSocket(Transform root, string exactName)
     {
-        if (lifeSeconds <= 0f) return;
-        for (int i = list.Count - 1; i >= 0; i--)
-        {
-            var go = list[i];
-            if (!go) { list.RemoveAt(i); continue; }
-            if (player && Vector3.Distance(player.position, go.transform.position) > triggerDistance * 4f)
-            {
-                Destroy(go);
-                list.RemoveAt(i);
-            }
-        }
+        var t = root.GetComponentsInChildren<Transform>(true)
+                    .FirstOrDefault(x => x.name == exactName);
+
+        if (t) return t;
+
+        string key = exactName.ToLower();
+        return root.GetComponentsInChildren<Transform>(true)
+                   .FirstOrDefault(x => x.name.ToLower() == key);
     }
 
-    void CleanupOrphans(List<GameObject> list)
+    void AlignByStart(Transform piece, Transform socketStart, Vector3 targetPos, Quaternion targetRot)
     {
-        for (int i = list.Count - 1; i >= 0; i--)
-            if (!list[i]) list.RemoveAt(i);
+        var rotDelta = targetRot * Quaternion.Inverse(socketStart.rotation);
+        piece.rotation = rotDelta * piece.rotation;
+        piece.position += (targetPos - socketStart.position);
     }
 
-    #endregion
+    void AlignStartToEnd(Transform piece, Transform socketStart, Transform prevSocketEnd)
+    {
+        AlignByStart(piece, socketStart, prevSocketEnd.position, prevSocketEnd.rotation);
+    }
+
+    bool PrefabHasSockets(GameObject prefab)
+    {
+        var temp = Instantiate(prefab);
+        temp.hideFlags = HideFlags.HideAndDontSave;
+
+        bool ok = FindExactSocket(temp.transform, startSocketName) &&
+                  FindExactSocket(temp.transform, endSocketName);
+
+        DestroyImmediate(temp);
+        return ok;
+    }
 }

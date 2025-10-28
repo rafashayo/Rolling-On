@@ -463,7 +463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c37b9677d75f2744b1afea6098f65a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floorsRoot: {fileID: 0}
+  floorsRoot: {fileID: 310824706952473973, guid: 717106d419d19994e87a45896ee148ac, type: 3}
   floorsRootPath: TrackRuntime/Floors
   decorPrefabs:
   - {fileID: 2023860707}

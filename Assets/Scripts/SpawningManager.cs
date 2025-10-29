@@ -20,7 +20,8 @@ public class CarSpawnHandler : MonoBehaviourPunCallbacks
             GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
             mycamera.transform.SetParent(carModel.transform, false);
         }
-        else { 
+        else {
+            carModel = GameObject.Find("CarOne(Clone)");
             GameObject mycamera = Instantiate(playerCameraPF, new Vector3(0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
             mycamera.transform.SetParent(carModel.transform, false);
 

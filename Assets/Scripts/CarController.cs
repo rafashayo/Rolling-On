@@ -29,6 +29,9 @@ public class CarController : MonoBehaviour
     // NUEVO: offset fijo por rueda respecto a la rotación que devuelve el WheelCollider
     Quaternion[] _modelOffsetWorld;
 
+    public float RotationSpeed = 20.0f;
+    
+
     void Start()
     {
         carRb = GetComponent<Rigidbody>();
@@ -142,6 +145,7 @@ public class CarController : MonoBehaviour
             }
         }
     }
+
     public void AssignWheels()
     {
         wheels = GameObject.FindFirstObjectByType<wheelMaster>().wheels;

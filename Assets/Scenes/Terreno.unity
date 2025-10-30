@@ -683,7 +683,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carModel: {fileID: 6653972575647878895, guid: 3d855ca0905b4a7439976473469cf472, type: 3}
-  playerCameraPF: {fileID: 5308254259043627881, guid: 39909608347c98e4c8bc6212a98ce536, type: 3}
+  playerJugador: {fileID: 6371244531400842847, guid: dd5994e8ae40c6e48873c3f09ace6041, type: 3}
   carControllerPF: {fileID: 8629155084958720865, guid: 51c82437d878c5d4c9873d43c33aac55, type: 3}
 --- !u!1 &1551756905 stripped
 GameObject:
@@ -727,19 +727,19 @@ MonoBehaviour:
   - {fileID: 1742567297}
   - {fileID: 236623012}
   - {fileID: 292114954}
-  startSocketName: SocketStart
-  endSocketName: SocketEnd
-  avoidImmediateRepeat: 0.7
+  floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
+  player: {fileID: 0}
   initialPieces: 25
   triggerDistance: 120
-  pieceLifetime: 1200
   roadHeight: 0.01
-  floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
+  pieceLifetime: 1200
+  avoidImmediateRepeat: 0.7
+  startSocketName: SocketStart
+  endSocketName: SocketEnd
   floorSideTiles: 2
   floorTileSpacing: 20
   floorHeight: 0
   rotateFloorWithRoad: 1
-  player: {fileID: 0}
 --- !u!4 &1692258187
 Transform:
   m_ObjectHideFlags: 0
@@ -791,19 +791,19 @@ MonoBehaviour:
   - {fileID: 1742567297}
   - {fileID: 236623012}
   - {fileID: 292114954}
-  startSocketName: SocketStart
-  endSocketName: SocketEnd
-  avoidImmediateRepeat: 0.7
+  floorPrefab: {fileID: 0}
+  player: {fileID: 0}
   initialPieces: 5
   triggerDistance: 60
-  pieceLifetime: 1200
   roadHeight: 0.01
-  floorPrefab: {fileID: 0}
+  pieceLifetime: 1200
+  avoidImmediateRepeat: 0.7
+  startSocketName: SocketStart
+  endSocketName: SocketEnd
   floorSideTiles: 2
   floorTileSpacing: 20
   floorHeight: 0
   rotateFloorWithRoad: 1
-  player: {fileID: 0}
 --- !u!4 &1718198823
 Transform:
   m_ObjectHideFlags: 0

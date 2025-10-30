@@ -5,7 +5,7 @@ using UnityEngine;
 public class CarSpawnHandler : MonoBehaviourPunCallbacks
 {
     [SerializeField] private GameObject carModel;   // el mesh del auto
-    [SerializeField] private GameObject playerCameraPF;   // la cámara del jugador
+    [SerializeField] private GameObject playerJugador;   // la cámara del jugador
     [SerializeField] private CarController carControllerPF;   // el controlador del jugador
     void Start()
     {
@@ -17,13 +17,13 @@ public class CarSpawnHandler : MonoBehaviourPunCallbacks
             CarController controladorCar = Instantiate(carControllerPF, Vector3.zero, Quaternion.identity);
             controladorCar.transform.SetParent(carModel.transform, false);
             controladorCar.AssignWheels();
-            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(-0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
-            mycamera.transform.SetParent(carModel.transform, false);
+            GameObject theplayer = Instantiate(playerJugador, new Vector3(-0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
+            theplayer.transform.SetParent(carModel.transform, false);
         }
         else {
             carModel = GameObject.Find("CarOne(Clone)");
-            GameObject mycamera = Instantiate(playerCameraPF, new Vector3(0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
-            mycamera.transform.SetParent(carModel.transform, false);
+            GameObject theplayer = Instantiate(playerJugador, new Vector3(0.617231011f, 2.38640857f, -12.2114201f), Quaternion.identity);
+            theplayer.transform.SetParent(carModel.transform, false);
 
         }
 

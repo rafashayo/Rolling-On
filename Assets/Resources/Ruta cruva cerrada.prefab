@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 7529446256830785014}
   - component: {fileID: -4656960729703936149}
   - component: {fileID: 2248527218584517267}
+  - component: {fileID: -6083440573814980499}
+  - component: {fileID: -5917826307997228361}
   m_Layer: 0
   m_Name: Ruta cruva cerrada
   m_TagString: Untagged
@@ -133,6 +135,44 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 43.7653, y: 0.000000369948, z: 36.95686}
   m_Center: {x: 5.6987767, y: -0.000000020552662, z: 2.2438867}
+--- !u!114 &-6083440573814980499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3008972113100629016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &-5917826307997228361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3008972113100629016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &3685315387772971902
 GameObject:
   m_ObjectHideFlags: 0

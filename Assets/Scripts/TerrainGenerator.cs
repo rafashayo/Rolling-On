@@ -1,15 +1,16 @@
 using UnityEngine;
 using System.Linq;
+using Photon.Pun;
 
-public class TrackGenerator : MonoBehaviour
+public class TrackGenerator : MonoBehaviourPun
 {
     [Header("Prefabs y referencias")]
     public GameObject[] piecePrefabs;
-    public GameObject floorPrefab; // ← tu prefab "floor"
+    public GameObject floorPrefab;
     public Transform player;
 
     [Header("Configuración de generación")]
-    public int initialPieces = 3;
+    public int initialPieces = 1;
     public float triggerDistance = 60f;
     public float roadHeight = 0.01f;
     public float pieceLifetime = 1200f;
@@ -20,17 +21,17 @@ public class TrackGenerator : MonoBehaviour
     public string endSocketName = "SocketEnd";
 
     [Header("Grass / suelo lateral")]
-    public int floorSideTiles = 2;       // columnas por lado (izq/der)
-    public float floorTileSpacing = 20f; // distancia entre tiles
-    public float floorHeight = 0f;       // altura del grass
+    public int floorSideTiles = 2;
+    public float floorTileSpacing = 20f;
+    public float floorHeight = 0f;
     public bool rotateFloorWithRoad = true;
 
-    // Internos
     private Transform lastSocketEnd;
     private Vector3 nextPos;
     private Quaternion nextRot = Quaternion.identity;
     private int lastIndex = -1;
     private bool halted = false;
+    private bool waitingForTrigger = false;
 
     void Start()
     {
@@ -41,13 +42,16 @@ public class TrackGenerator : MonoBehaviour
             return;
         }
 
-        // Validar sockets en prefabs
-        for (int i = piecePrefabs.Length - 1; i >= 0; i--)
+        // Validar sockets localmente (solo en Master Client)
+        if (PhotonNetwork.IsMasterClient)
         {
-            if (!PrefabHasSockets(piecePrefabs[i]))
+            for (int i = piecePrefabs.Length - 1; i >= 0; i--)
             {
-                Debug.LogError($"Prefab '{piecePrefabs[i].name}' sin {startSocketName}/{endSocketName}. Removido.");
-                piecePrefabs = piecePrefabs.Where((p, idx) => idx != i).ToArray();
+                if (!PrefabHasSockets(piecePrefabs[i]))
+                {
+                    Debug.LogError($"Prefab '{piecePrefabs[i].name}' sin sockets válidos. Removido.");
+                    piecePrefabs = piecePrefabs.Where((p, idx) => idx != i).ToArray();
+                }
             }
         }
 
@@ -62,27 +66,36 @@ public class TrackGenerator : MonoBehaviour
         nextRot = Quaternion.identity;
         lastSocketEnd = null;
 
-        int n = Mathf.Max(1, initialPieces);
-        for (int i = 0; i < n && !halted; i++)
+        if (PhotonNetwork.IsMasterClient)
         {
-            if (!TrySpawnNext())
+            int n = Mathf.Max(1, initialPieces);
+            for (int i = 0; i < n && !halted; i++)
             {
-                halted = true;
-                break;
+                TrySpawnNext();
             }
         }
+
+        waitingForTrigger = true;
     }
 
     void Update()
     {
         if (halted || !player) return;
+        if (!PhotonNetwork.IsMasterClient) return; // solo el host genera
 
         float d = lastSocketEnd
             ? Vector3.Distance(player.position, lastSocketEnd.position)
             : Vector3.Distance(player.position, nextPos);
 
-        if (d < triggerDistance)
-            TrySpawnNext(); // genera 1 por frame
+        if (waitingForTrigger && d < triggerDistance)
+        {
+            if (TrySpawnNext())
+                waitingForTrigger = false;
+        }
+        else if (!waitingForTrigger && d > triggerDistance * 1.5f)
+        {
+            waitingForTrigger = true;
+        }
     }
 
     bool TrySpawnNext()
@@ -91,22 +104,24 @@ public class TrackGenerator : MonoBehaviour
 
         int idx = ChooseIndex();
         var prefab = piecePrefabs[idx];
-        var inst = Instantiate(prefab);
+
+        // 🚀 Instancia en red
+        GameObject inst = PhotonNetwork.Instantiate(prefab.name, Vector3.zero, Quaternion.identity);
         var t = inst.transform;
 
-        var start = FindExactSocket(inst.transform, startSocketName);
-        var end = FindExactSocket(inst.transform, endSocketName);
+        var start = FindExactSocket(t, startSocketName);
+        var end = FindExactSocket(t, endSocketName);
 
         if (!start || !end)
         {
-            Debug.LogError($"Instancia '{prefab.name}' sin sockets {startSocketName}/{endSocketName}. Removido del pool.");
-            Destroy(inst);
+            Debug.LogError($"'{prefab.name}' sin sockets válidos. Eliminado del pool.");
+            PhotonNetwork.Destroy(inst);
             piecePrefabs = piecePrefabs.Where(p => p != prefab).ToArray();
             lastIndex = -1;
             return piecePrefabs.Length > 0;
         }
 
-        // Alinear tramo nuevo
+        // Alinear
         if (lastSocketEnd == null)
             AlignByStart(t, start, nextPos, nextRot);
         else
@@ -115,65 +130,65 @@ public class TrackGenerator : MonoBehaviour
         if (roadHeight != 0f)
             t.position = new Vector3(t.position.x, roadHeight, t.position.z);
 
-        // ---- Grass alrededor del tramo ----
+        // Grass (no sincronizado)
         if (floorPrefab)
-        {
-            Vector3 startW = start.position;
-            Vector3 endW = end.position;
-            Vector3 fwd = (endW - startW);
-            fwd.y = 0f;
-
-            float length = fwd.magnitude;
-            if (length > 0.01f)
-            {
-                fwd /= length;
-                Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
-                int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
-
-                for (int f = 0; f < forwardTiles; f++)
-                {
-                    float along = (f + 0.5f) * floorTileSpacing;
-                    Vector3 basePos = startW + fwd * Mathf.Min(along, length - 0.01f);
-
-                    for (int s = -floorSideTiles; s <= floorSideTiles; s++)
-                    {
-                        if (s == 0) continue; // evita pisar la carretera
-
-                        Vector3 pos = basePos + right * (s * floorTileSpacing);
-                        pos.y = floorHeight;
-
-                        Quaternion rot = rotateFloorWithRoad
-                            ? Quaternion.LookRotation(fwd, Vector3.up)
-                            : Quaternion.identity;
-
-                        // parent al tramo para que se limpie junto
-                        Instantiate(floorPrefab, pos, rot, t);
-                    }
-                }
-            }
-        }
-        // -----------------------------------
+            GenerateFloor(t, start.position, end.position);
 
         lastSocketEnd = end;
-        nextPos = lastSocketEnd.position;
-        nextRot = lastSocketEnd.rotation;
-
-        Destroy(inst, pieceLifetime);
+        nextPos = end.position;
+        nextRot = end.rotation;
         lastIndex = idx;
+
+        // Destruir después de X segundos en todos los clientes
+        photonView.RPC(nameof(RemoteDestroy), RpcTarget.AllBuffered, inst.GetComponent<PhotonView>().ViewID, pieceLifetime);
+
         return true;
+    }
+
+    [PunRPC]
+    void RemoteDestroy(int viewID, float delay)
+    {
+        PhotonView pv = PhotonView.Find(viewID);
+        if (pv != null)
+            Destroy(pv.gameObject, delay);
+    }
+
+    void GenerateFloor(Transform parent, Vector3 startW, Vector3 endW)
+    {
+        Vector3 fwd = (endW - startW);
+        fwd.y = 0f;
+        float length = fwd.magnitude;
+        if (length < 0.01f) return;
+
+        fwd.Normalize();
+        Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
+        int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
+
+        for (int f = 0; f < forwardTiles; f++)
+        {
+            float along = (f + 0.5f) * floorTileSpacing;
+            Vector3 basePos = startW + fwd * Mathf.Min(along, length - 0.01f);
+
+            for (int s = -floorSideTiles; s <= floorSideTiles; s++)
+            {
+                if (s == 0) continue;
+                Vector3 pos = basePos + right * (s * floorTileSpacing);
+                pos.y = floorHeight;
+                Quaternion rot = rotateFloorWithRoad ? Quaternion.LookRotation(fwd, Vector3.up) : Quaternion.identity;
+                Instantiate(floorPrefab, pos, rot, parent);
+            }
+        }
     }
 
     int ChooseIndex()
     {
         int idx = Random.Range(0, piecePrefabs.Length);
-
         if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
         {
             int safety = 10;
             while (idx == lastIndex && safety-- > 0)
                 idx = Random.Range(0, piecePrefabs.Length);
         }
-
         return idx;
     }
 
@@ -181,9 +196,7 @@ public class TrackGenerator : MonoBehaviour
     {
         var t = root.GetComponentsInChildren<Transform>(true)
                     .FirstOrDefault(x => x.name == exactName);
-
         if (t) return t;
-
         string key = exactName.ToLower();
         return root.GetComponentsInChildren<Transform>(true)
                    .FirstOrDefault(x => x.name.ToLower() == key);
@@ -205,10 +218,8 @@ public class TrackGenerator : MonoBehaviour
     {
         var temp = Instantiate(prefab);
         temp.hideFlags = HideFlags.HideAndDontSave;
-
         bool ok = FindExactSocket(temp.transform, startSocketName) &&
                   FindExactSocket(temp.transform, endSocketName);
-
         DestroyImmediate(temp);
         return ok;
     }

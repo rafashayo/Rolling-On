@@ -7,6 +7,7 @@ public class CarSpawnHandler : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject carModel;   // el mesh del auto
     [SerializeField] private GameObject playerJugador;   // la cámara del jugador
     [SerializeField] private CarController carControllerPF;   // el controlador del jugador
+    public TrackGenerator myterrainGenerator;
     void Start()
     {
         //PHOTONINSTANTIANTIATE CARMODEL
@@ -26,6 +27,8 @@ public class CarSpawnHandler : MonoBehaviourPunCallbacks
             theplayer.transform.SetParent(carModel.transform, false);
 
         }
+
+        myterrainGenerator.player = carModel.transform;
 
         // Primer jugador (MasterClient) tiene auto + cámara
         //carModel.SetActive(true);

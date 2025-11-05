@@ -1,4 +1,6 @@
+using Photon.Pun.Demo.Cockpit;
 using UnityEngine;
+using Photon.Pun;
 
 public class VolanteController : MonoBehaviour
 {
@@ -13,6 +15,8 @@ public class VolanteController : MonoBehaviour
     void Start()
     {
         rotacionInicial = transform.localRotation;
+        if (!PhotonNetwork.IsMasterClient)
+            return;
     }
 
     void Update()

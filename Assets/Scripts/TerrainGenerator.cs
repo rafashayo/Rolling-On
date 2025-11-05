@@ -175,7 +175,7 @@ public class TrackGenerator : MonoBehaviourPun
                 Vector3 pos = basePos + right * (s * floorTileSpacing);
                 pos.y = floorHeight;
                 Quaternion rot = rotateFloorWithRoad ? Quaternion.LookRotation(fwd, Vector3.up) : Quaternion.identity;
-                Instantiate(floorPrefab, pos, rot, parent);
+                PhotonNetwork.Instantiate(floorPrefab.name, pos, rot);
             }
         }
     }

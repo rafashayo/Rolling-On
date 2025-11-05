@@ -2,36 +2,60 @@ using UnityEngine;
 
 public class RadioScript : MonoBehaviour
 {
+    public AudioClip[] playlist; 
+    private int cancionActual = 0;
+
     private bool encendido = false;
     private AudioSource audioSource;
 
     void Start()
     {
-        // Obtenemos el componente AudioSource que debe estar en el mismo GameObject
         audioSource = GetComponent<AudioSource>();
-
-        // Por si acaso, comenzamos con el audio apagado
+        audioSource.loop = false;
         audioSource.mute = true;
     }
 
     void Update()
     {
-        // Detectamos cuando se presiona la tecla R (una sola vez, no mientras se mantiene)
+        // Encender / apagar radio con R
         if (Input.GetKeyDown(KeyCode.R))
         {
-            // Cambiamos el estado (toggle)
             encendido = !encendido;
 
-            // Si encendido es true, se escucha el audio; si es false, se mutea
-            audioSource.mute = !encendido;
-
-            // Si el audio no se está reproduciendo, lo iniciamos
-            if (!audioSource.isPlaying)
+            if (encendido)
             {
-                audioSource.Play();
+                audioSource.mute = false;
+                ReproducirCancion();
             }
-
-            Debug.Log("Radio encendida: " + encendido);
+            else
+            {
+                audioSource.mute = true;
+            }
         }
+
+        // Pasar a la siguiente canción con N
+        if (encendido && Input.GetKeyDown(KeyCode.N))
+        {
+            PasarASiguienteCancion();
+        }
+
+        // Si termina la canción, pasar a la siguiente automáticamente
+        if (encendido && !audioSource.isPlaying)
+        {
+            PasarASiguienteCancion();
+        }
+    }
+
+    void ReproducirCancion()
+    {
+        audioSource.clip = playlist[cancionActual];
+        audioSource.Play();
+        Debug.Log("Reproduciendo: " + audioSource.clip.name);
+    }
+
+    void PasarASiguienteCancion()
+    {
+        cancionActual = (cancionActual + 1) % playlist.Length;
+        ReproducirCancion();
     }
 }

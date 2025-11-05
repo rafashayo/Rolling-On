@@ -433,6 +433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   velocidadGiro: 100
   limiteGiro: 45
+  velocidadRetorno: 3
 --- !u!1 &639466710129058532
 GameObject:
   m_ObjectHideFlags: 0

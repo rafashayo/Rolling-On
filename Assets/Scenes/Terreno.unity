@@ -722,11 +722,11 @@ MonoBehaviour:
   piecePrefabs:
   - {fileID: 6214661059066645048, guid: e87166b63ed7fde41872f982e5fbed98, type: 3}
   - {fileID: 7563857541312164851, guid: 3adcf08415d6ec2409143fb77e95ba20, type: 3}
+  - {fileID: 8393957279933335571, guid: b02313737460342449d234f14d1f47a2, type: 3}
   - {fileID: 8336902989485034007, guid: b0c266a9cfd9e8e4da658d5c67426aa3, type: 3}
   - {fileID: 2112095987735343435, guid: 05840d7ffb81f7043841d26f0f2e7578, type: 3}
   - {fileID: 3008972113100629016, guid: 665a4e653ea130c44bc7888f37064a2b, type: 3}
   - {fileID: 8849719592859790125, guid: 4e67eaa72b9b3744a9c0dc7987c0b9f8, type: 3}
-  - {fileID: 8393957279933335571, guid: b02313737460342449d234f14d1f47a2, type: 3}
   floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
   player: {fileID: 0}
   initialPieces: 4

@@ -6,7 +6,6 @@ public class TrackGenerator : MonoBehaviourPun
 {
     [Header("Prefabs y referencias")]
     public GameObject[] piecePrefabs;
-    public GameObject floorPrefab;
     public Transform player;
 
     [Header("Configuración de generación")]
@@ -19,12 +18,6 @@ public class TrackGenerator : MonoBehaviourPun
     [Header("Sockets")]
     public string startSocketName = "SocketStart";
     public string endSocketName = "SocketEnd";
-
-    [Header("Grass / suelo lateral")]
-    public int floorSideTiles = 2;
-    public float floorTileSpacing = 20f;
-    public float floorHeight = 0f;
-    public bool rotateFloorWithRoad = true;
 
     private Transform lastSocketEnd;
     private Vector3 nextPos;
@@ -42,9 +35,9 @@ public class TrackGenerator : MonoBehaviourPun
             return;
         }
 
-        // Validar sockets localmente (solo en Master Client)
         if (PhotonNetwork.IsMasterClient)
         {
+            // Validar sockets solo una vez en el master
             for (int i = piecePrefabs.Length - 1; i >= 0; i--)
             {
                 if (!PrefabHasSockets(piecePrefabs[i]))
@@ -130,16 +123,11 @@ public class TrackGenerator : MonoBehaviourPun
         if (roadHeight != 0f)
             t.position = new Vector3(t.position.x, roadHeight, t.position.z);
 
-        // Grass (no sincronizado)
-        if (floorPrefab)
-            GenerateFloor(t, start.position, end.position);
-
         lastSocketEnd = end;
         nextPos = end.position;
         nextRot = end.rotation;
         lastIndex = idx;
 
-        // Destruir después de X segundos en todos los clientes
         photonView.RPC(nameof(RemoteDestroy), RpcTarget.AllBuffered, inst.GetComponent<PhotonView>().ViewID, pieceLifetime);
 
         return true;
@@ -151,33 +139,6 @@ public class TrackGenerator : MonoBehaviourPun
         PhotonView pv = PhotonView.Find(viewID);
         if (pv != null)
             Destroy(pv.gameObject, delay);
-    }
-
-    void GenerateFloor(Transform parent, Vector3 startW, Vector3 endW)
-    {
-        Vector3 fwd = (endW - startW);
-        fwd.y = 0f;
-        float length = fwd.magnitude;
-        if (length < 0.01f) return;
-
-        fwd.Normalize();
-        Vector3 right = new Vector3(fwd.z, 0f, -fwd.x);
-        int forwardTiles = Mathf.Max(1, Mathf.CeilToInt(length / Mathf.Max(0.01f, floorTileSpacing)));
-
-        for (int f = 0; f < forwardTiles; f++)
-        {
-            float along = (f + 0.5f) * floorTileSpacing;
-            Vector3 basePos = startW + fwd * Mathf.Min(along, length - 0.01f);
-
-            for (int s = -floorSideTiles; s <= floorSideTiles; s++)
-            {
-                if (s == 0) continue;
-                Vector3 pos = basePos + right * (s * floorTileSpacing);
-                pos.y = floorHeight;
-                Quaternion rot = rotateFloorWithRoad ? Quaternion.LookRotation(fwd, Vector3.up) : Quaternion.identity;
-                PhotonNetwork.Instantiate(floorPrefab.name, pos, rot);
-            }
-        }
     }
 
     int ChooseIndex()

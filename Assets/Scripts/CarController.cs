@@ -15,10 +15,11 @@ public class CarController : MonoBehaviour
         public Axe1 axe1;
     }
 
-    public float maxAcceleration = 30.0f;
-    public float brakeAcceleration = 50.0f;
-    public float turnSensitivity = 1.0f;
-    public float maxSteerAngle = 30.0f;
+    public float aceleradorNumero;
+    public float maxAcceleration;
+    public float brakeAcceleration;
+    public float turnSensitivity;
+    public float maxSteerAngle;
 
     public Vector3 _centerOfMass;
     public List<Wheel> wheels;
@@ -29,7 +30,7 @@ public class CarController : MonoBehaviour
     // NUEVO: offset fijo por rueda respecto a la rotación que devuelve el WheelCollider
     Quaternion[] _modelOffsetWorld;
 
-    public float RotationSpeed = 20.0f;
+    public float RotationSpeed;
     
 
     void Start()
@@ -82,7 +83,7 @@ public class CarController : MonoBehaviour
         foreach (var wheel in wheels)
         {
             if (wheel.axe1 == Axe1.Rear) // solo las traseras
-                wheel.wheelCollider.motorTorque = moveInput * maxAcceleration * 600;
+                wheel.wheelCollider.motorTorque = moveInput * maxAcceleration * aceleradorNumero;
             else
                 wheel.wheelCollider.motorTorque = 0;
         }

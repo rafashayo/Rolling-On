@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b90e5700e161427498fbf717136e4477, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  aceleradorNumero: 1200
   maxAcceleration: 800
   brakeAcceleration: 900
   turnSensitivity: 1
@@ -67,6 +68,7 @@ MonoBehaviour:
     wheelCollider: {fileID: 0}
     WheelEffectObj: {fileID: 0}
     axe1: 1
+  RotationSpeed: 60
 --- !u!54 &-7691770991986169376
 Rigidbody:
   m_ObjectHideFlags: 0

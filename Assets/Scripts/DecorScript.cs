@@ -3,36 +3,48 @@ using Photon.Pun;
 
 public class GeneradorDecoraciones : MonoBehaviourPun
 {
-    [Header("Prefabs a Instanciar (deben estar en Resources)")]
-    public string[] nombresPrefabs; // Nombres de los prefabs en Resources
+    [Header("Prefabs a Instanciar (en Resources)")]
+    public string[] nombresPrefabs;
 
-    [Header("Área de generación")]
-    public Vector2 rangoX = new Vector2(-50, 50);
-    public Vector2 rangoZ = new Vector2(-50, 50);
-    public float alturaSpawn = 50f;
+    [Header("Radio de generación")]
+    public float radioGeneracion = 2000f;
 
     [Header("Cantidad de objetos")]
-    public int cantidadObjetos = 50;
+    public int cantidadObjetos = 3000;
+
+    [Header("Raycast")]
+    public float alturaRaycast = 500f;
+
+    [Header("Objetos Prohibidos (GameObjects)")]
+    public GameObject[] objetosProhibidos;
 
     void Start()
     {
-        // Solo el Master Client genera objetos
         if (PhotonNetwork.IsMasterClient)
             GenerarObjetos();
     }
 
     void GenerarObjetos()
     {
+        float maxDist = alturaRaycast + 1000f;
+
         for (int i = 0; i < cantidadObjetos; i++)
         {
-            float x = Random.Range(rangoX.x, rangoX.y);
-            float z = Random.Range(rangoZ.x, rangoZ.y);
-            Vector3 origen = new Vector3(x, alturaSpawn, z);
+            Vector2 punto = Random.insideUnitCircle * radioGeneracion;
 
-            RaycastHit hit;
-            if (Physics.Raycast(origen, Vector3.down, out hit, alturaSpawn * 2))
+            Vector3 origen = new Vector3(punto.x, alturaRaycast, punto.y);
+
+            // ❌ No generar si Z < 0
+            if (origen.z < 0)
+                continue;
+
+            Debug.DrawRay(origen, Vector3.down * maxDist, Color.red, 2f);
+
+            if (Physics.Raycast(origen, Vector3.down, out RaycastHit hit, maxDist))
             {
-                // Seleccionar prefab por nombre
+                if (EsObjetoProhibido(hit.collider.transform))
+                    continue;
+
                 string nombrePrefab = nombresPrefabs[Random.Range(0, nombresPrefabs.Length)];
 
                 GameObject obj = PhotonNetwork.Instantiate(
@@ -44,5 +56,25 @@ public class GeneradorDecoraciones : MonoBehaviourPun
                 obj.transform.parent = this.transform;
             }
         }
+    }
+
+    bool EsObjetoProhibido(Transform t)
+    {
+        Debug.Log(t.gameObject.name);
+
+        if (t.gameObject.CompareTag("Track"))
+            return true;
+
+        for (int i = 0; i < objetosProhibidos.Length; i++)
+        {
+            Transform prohibido = objetosProhibidos[i].transform;
+
+            if (t == prohibido)
+                return true;
+
+            if (t.IsChildOf(prohibido))
+                return true;
+        }
+        return false;
     }
 }

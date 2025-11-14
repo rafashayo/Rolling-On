@@ -478,7 +478,6 @@ MonoBehaviour:
   - {fileID: 2112095987735343435, guid: 05840d7ffb81f7043841d26f0f2e7578, type: 3}
   - {fileID: 3008972113100629016, guid: 665a4e653ea130c44bc7888f37064a2b, type: 3}
   - {fileID: 8849719592859790125, guid: 4e67eaa72b9b3744a9c0dc7987c0b9f8, type: 3}
-  floorPrefab: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
   player: {fileID: 0}
   initialPieces: 4
   triggerDistance: 600
@@ -487,10 +486,6 @@ MonoBehaviour:
   avoidImmediateRepeat: 0.7
   startSocketName: SocketStart
   endSocketName: SocketEnd
-  floorSideTiles: 2
-  floorTileSpacing: 20
-  floorHeight: 0
-  rotateFloorWithRoad: 1
 --- !u!4 &1692258187
 Transform:
   m_ObjectHideFlags: 0
@@ -541,11 +536,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nombresPrefabs:
-  - SetArboles
-  rangoX: {x: -50, y: 50}
-  rangoZ: {x: -50, y: 50}
-  alturaSpawn: 50
-  cantidadObjetos: 50
+  - ArbolGenerico1
+  - Arbusto1
+  - PinoAlto
+  radioGeneracion: 2000
+  cantidadObjetos: 500
+  alturaRaycast: 500
+  objetosProhibidos:
+  - {fileID: 6325308517142531936, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+  - {fileID: 7180002520455717979, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+  - {fileID: 7435229018741540595, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+  - {fileID: 7747163380410942079, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+  - {fileID: 8090596801830288186, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+  - {fileID: -2900445842746562530, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
+  - {fileID: 8145427274663793177, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
 --- !u!1 &1795754971
 GameObject:
   m_ObjectHideFlags: 0

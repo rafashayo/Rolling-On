@@ -130,12 +130,11 @@ GameObject:
   - component: {fileID: 5986183574595894685}
   - component: {fileID: -608347061409516446}
   - component: {fileID: -7687091661030841646}
-  - component: {fileID: 6767235206904107840}
   - component: {fileID: -1702198789006717793}
   - component: {fileID: 2562393661644287951}
   m_Layer: 0
   m_Name: Curva bien abier 1
-  m_TagString: Untagged
+  m_TagString: Track
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -244,32 +243,11 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
-  m_Convex: 1
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2596935774340292734, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
---- !u!65 &6767235206904107840
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7563857541312164851}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 27.240536, y: 0.00000034243664, z: 20.57331}
-  m_Center: {x: 1.8712298, y: 0, z: -21.831577}
 --- !u!114 &-1702198789006717793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,6 +377,10 @@ PrefabInstance:
     - target: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
       propertyPath: m_Name
       value: Floor
+      objectReference: {fileID: 0}
+    - target: {fileID: 1879356056708201673, guid: 717106d419d19994e87a45896ee148ac, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

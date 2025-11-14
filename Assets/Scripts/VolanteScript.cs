@@ -21,6 +21,8 @@ public class VolanteController : MonoBehaviour
 
     void Update()
     {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
         float input = 0f;
 
         if (Input.GetKey(KeyCode.A))

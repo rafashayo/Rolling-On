@@ -48,7 +48,7 @@ MonoBehaviour:
   aceleradorNumero: 1200
   maxAcceleration: 800
   brakeAcceleration: 900
-  turnSensitivity: 1
+  turnSensitivity: 1.5
   maxSteerAngle: 35
   _centerOfMass: {x: 0, y: -1, z: 0}
   wheels:
@@ -77,7 +77,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6193480554527313499}
   serializedVersion: 5
-  m_Mass: 70
+  m_Mass: 20
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}

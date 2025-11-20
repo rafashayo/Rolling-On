@@ -27,28 +27,26 @@ public class CarController : MonoBehaviour
     float moveInput, steerInput;
     Rigidbody carRb;
 
-    // NUEVO: offset fijo por rueda respecto a la rotación que devuelve el WheelCollider
     Quaternion[] _modelOffsetWorld;
 
     public float RotationSpeed;
-    
+
+    // --- FUEL ---
+    public float fuel = 100f;              
+    public float fuelConsumptionRate = 5f; 
 
     void Start()
     {
         carRb = GetComponent<Rigidbody>();
         carRb.centerOfMass = _centerOfMass;
 
-        // Capturamos el offset real una sola vez, comparando la rotación que
-        // da el WheelCollider (GetWorldPose) con la del modelo tal como está en escena.
         _modelOffsetWorld = new Quaternion[wheels.Count];
         for (int i = 0; i < wheels.Count; i++)
         {
             var w = wheels[i];
             if (w.wheelModel && w.wheelCollider)
             {
-                // rot del collider en world (sin spin/steer iniciales relevantes)
                 w.wheelCollider.GetWorldPose(out _, out Quaternion rotWC0);
-                // offset que “convierte” la rot del collider en la del modelo que dejaste en el editor
                 _modelOffsetWorld[i] = Quaternion.Inverse(rotWC0) * w.wheelModel.transform.rotation;
             }
             else
@@ -63,6 +61,8 @@ public class CarController : MonoBehaviour
         GetInputs();
         AnimatedWheels();
         WheelEffects();
+
+        ConsumeFuel();
     }
 
     void LateUpdate()
@@ -74,7 +74,7 @@ public class CarController : MonoBehaviour
 
     void GetInputs()
     {
-        moveInput  = Input.GetAxis("Vertical");
+        moveInput = Input.GetAxis("Vertical");
         steerInput = Input.GetAxis("Horizontal");
     }
 
@@ -82,10 +82,15 @@ public class CarController : MonoBehaviour
     {
         foreach (var wheel in wheels)
         {
-            if (wheel.axe1 == Axe1.Rear) // solo las traseras
-                wheel.wheelCollider.motorTorque = moveInput * maxAcceleration * aceleradorNumero;
+            if (wheel.axe1 == Axe1.Rear)
+            {
+                // --- MODIFICADO: si fuel <= 0, no acelera ---
+                wheel.wheelCollider.motorTorque = (fuel > 0f) ? moveInput * maxAcceleration * aceleradorNumero : 0f;
+            }
             else
-                wheel.wheelCollider.motorTorque = 0;
+            {
+                wheel.wheelCollider.motorTorque = 0f;
+            }
         }
     }
 
@@ -103,18 +108,21 @@ public class CarController : MonoBehaviour
 
     void Brake()
     {
-        if(Input.GetKey(KeyCode.Space))
+        foreach (var wheel in wheels)
         {
-            foreach(var wheel in wheels)
+            // si presionás espacio, frena normalmente
+            if (Input.GetKey(KeyCode.Space))
             {
                 wheel.wheelCollider.brakeTorque = 300 * brakeAcceleration * Time.deltaTime;
             }
-        }
-        else
-        {
-            foreach(var wheel in wheels)
+            // --- MODIFICADO: si fuel <= 0, frena automáticamente ---
+            else if (fuel <= 0f)
             {
-                wheel.wheelCollider.brakeTorque = 0;
+                wheel.wheelCollider.brakeTorque = 1000f; // fuerza de freno alta para detener
+            }
+            else
+            {
+                wheel.wheelCollider.brakeTorque = 0f;
             }
         }
     }
@@ -127,28 +135,33 @@ public class CarController : MonoBehaviour
             if (!w.wheelModel || !w.wheelCollider) continue;
 
             w.wheelCollider.GetWorldPose(out Vector3 pos, out Quaternion rot);
-            // Aplicamos SIEMPRE: rotación del collider * offset guardado (no se acumula)
             w.wheelModel.transform.SetPositionAndRotation(pos, rot * _modelOffsetWorld[i]);
         }
     }
 
     void WheelEffects()
     {
-        foreach(var wheel in wheels)
+        foreach (var wheel in wheels)
         {
-            if(Input.GetKey(KeyCode.Space) && wheel.axe1 == Axe1.Rear)
-            {
+            if (Input.GetKey(KeyCode.Space) && wheel.axe1 == Axe1.Rear)
                 wheel.WheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = true;
-            }
-            else 
-            {
+            else
                 wheel.WheelEffectObj.GetComponentInChildren<TrailRenderer>().emitting = false;
-            }
         }
     }
 
     public void AssignWheels()
     {
         wheels = GameObject.FindFirstObjectByType<wheelMaster>().wheels;
+    }
+
+    void ConsumeFuel()
+    {
+        if (fuel <= 0f) return; // ya está en 0, no resta más
+
+        fuel -= fuelConsumptionRate * Time.deltaTime;
+        if (fuel < 0f) fuel = 0f;
+
+        Debug.Log("Fuel: " + fuel.ToString("F1") + "%");
     }
 }

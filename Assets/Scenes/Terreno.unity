@@ -478,6 +478,7 @@ MonoBehaviour:
   - {fileID: 2112095987735343435, guid: 05840d7ffb81f7043841d26f0f2e7578, type: 3}
   - {fileID: 3008972113100629016, guid: 665a4e653ea130c44bc7888f37064a2b, type: 3}
   - {fileID: 8849719592859790125, guid: 4e67eaa72b9b3744a9c0dc7987c0b9f8, type: 3}
+  - {fileID: 3144932426538875968, guid: 4a4cbde01ea6ba44782d8c99668013ca, type: 3}
   player: {fileID: 0}
   initialPieces: 4
   triggerDistance: 600

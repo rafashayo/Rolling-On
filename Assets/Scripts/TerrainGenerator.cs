@@ -141,17 +141,40 @@ public class TrackGenerator : MonoBehaviourPun
             Destroy(pv.gameObject, delay);
     }
 
+    // -------------------------------------------------------------
+    // 🔥 SOLO ESTA FUNCIÓN SE MODIFICÓ PARA AGREGAR EL 10%
+    // -------------------------------------------------------------
     int ChooseIndex()
+{
+    // 🎯 Prefab especial = índice 7 → 10 % de probabilidad real
+    if (Random.value < 0.10f)
+        return 7;
+
+    // 👉 Elegir entre los otros prefabs
+    int idx = Random.Range(0, piecePrefabs.Length);
+
+    // Evitar elegir el índice 7 fuera del 10%
+    if (idx == 7)
+        idx = (idx + 1) % piecePrefabs.Length;
+
+    // ✔ Evitar repetición inmediata (si está activado)
+    if (lastIndex >= 0 && piecePrefabs.Length > 2 && Random.value < avoidImmediateRepeat)
     {
-        int idx = Random.Range(0, piecePrefabs.Length);
-        if (lastIndex >= 0 && piecePrefabs.Length > 1 && Random.value < avoidImmediateRepeat)
+        int safety = 10;
+        while (idx == lastIndex && safety-- > 0)
         {
-            int safety = 10;
-            while (idx == lastIndex && safety-- > 0)
-                idx = Random.Range(0, piecePrefabs.Length);
+            idx = Random.Range(0, piecePrefabs.Length);
+
+            if (idx == 7) // evitar el especial fuera del 10%
+                idx = (idx + 1) % piecePrefabs.Length;
         }
-        return idx;
     }
+
+    return idx;
+}
+
+
+    // -------------------------------------------------------------
 
     Transform FindExactSocket(Transform root, string exactName)
     {

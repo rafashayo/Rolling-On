@@ -64,7 +64,6 @@ public class CarController : MonoBehaviour
         ConsumeFuel();
     }
 
-    // --- AHORA LA FÍSICA VA EN FIXEDUPDATE ---
     void FixedUpdate()
     {
         Move();
@@ -80,13 +79,15 @@ public class CarController : MonoBehaviour
 
     void Move()
     {
+        // -- TORQUE REALISTA --
+        float torqueReal = maxAcceleration * aceleradorNumero * 200f;
+
         foreach (var wheel in wheels)
         {
             if (wheel.axe1 == Axe1.Rear)
             {
-                // si no hay fuel, no acelera
                 wheel.wheelCollider.motorTorque =
-                    (fuel > 0f) ? moveInput * maxAcceleration * aceleradorNumero : 0f;
+                    (fuel > 0f) ? moveInput * torqueReal : 0f;
             }
             else
             {
@@ -102,7 +103,8 @@ public class CarController : MonoBehaviour
             if (wheel.axe1 == Axe1.Front)
             {
                 var target = steerInput * turnSensitivity * maxSteerAngle;
-                wheel.wheelCollider.steerAngle = Mathf.Lerp(wheel.wheelCollider.steerAngle, target, 0.6f);
+                wheel.wheelCollider.steerAngle =
+                    Mathf.Lerp(wheel.wheelCollider.steerAngle, target, 0.6f);
             }
         }
     }
@@ -111,16 +113,13 @@ public class CarController : MonoBehaviour
     {
         foreach (var wheel in wheels)
         {
-            // freno manual
             if (Input.GetKey(KeyCode.Space))
             {
-                // ❗ brakeTorque NO lleva deltaTime
                 wheel.wheelCollider.brakeTorque = 300f * brakeAcceleration;
             }
-            // freno automático si se queda sin combustible
             else if (fuel <= 0f)
             {
-                wheel.wheelCollider.brakeTorque = 1500f; 
+                wheel.wheelCollider.brakeTorque = 1500f;
             }
             else
             {

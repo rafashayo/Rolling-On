@@ -18,7 +18,7 @@ public class GeneradorDecoraciones : MonoBehaviourPun
     [Header("Objetos Prohibidos (GameObjects)")]
     public GameObject[] objetosProhibidos;
 
-    void Start()
+    void Update()
     {
         if (PhotonNetwork.IsMasterClient)
             GenerarObjetos();
@@ -42,6 +42,8 @@ public class GeneradorDecoraciones : MonoBehaviourPun
 
             if (Physics.Raycast(origen, Vector3.down, out RaycastHit hit, maxDist))
             {
+
+                Debug.Log("Raycast tocó: " + hit.collider.gameObject.name + " | Tag: " + hit.collider.tag);
                 if (EsObjetoProhibido(hit.collider.transform))
                     continue;
 

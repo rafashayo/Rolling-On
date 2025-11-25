@@ -128,8 +128,6 @@ public class TrackGenerator : MonoBehaviourPun
         nextRot = end.rotation;
         lastIndex = idx;
 
-        photonView.RPC(nameof(RemoteDestroy), RpcTarget.AllBuffered, inst.GetComponent<PhotonView>().ViewID, pieceLifetime);
-
         return true;
     }
 

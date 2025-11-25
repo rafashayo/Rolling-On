@@ -162,6 +162,6 @@ public class CarController : MonoBehaviour
         fuel -= fuelConsumptionRate * Time.deltaTime;
         if (fuel < 0f) fuel = 0f;
 
-        Debug.Log("Fuel: " + fuel.ToString("F1") + "%");
+        // Debug.Log("Fuel: " + fuel.ToString("F1") + "%");
     }
 }

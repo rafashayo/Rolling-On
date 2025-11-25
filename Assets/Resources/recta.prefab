@@ -248,6 +248,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PostesElectrcidadFinal (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
+      propertyPath: m_TagString
+      value: Decor
+      objectReference: {fileID: 0}
     - target: {fileID: 618169616716463931, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.15
@@ -321,6 +325,10 @@ PrefabInstance:
     - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_Name
       value: PostesElectrcidadFinal (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
+      propertyPath: m_TagString
+      value: Decor
       objectReference: {fileID: 0}
     - target: {fileID: 618169616716463931, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_LocalScale.x
@@ -470,6 +478,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PostesElectrcidadFinal (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
+      propertyPath: m_TagString
+      value: Decor
+      objectReference: {fileID: 0}
     - target: {fileID: 618169616716463931, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.15
@@ -543,6 +555,10 @@ PrefabInstance:
     - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_Name
       value: PostesElectrcidadFinal (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
+      propertyPath: m_TagString
+      value: Decor
       objectReference: {fileID: 0}
     - target: {fileID: 618169616716463931, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_LocalScale.x
@@ -618,6 +634,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PostesElectrcidadFinal (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
+      propertyPath: m_TagString
+      value: Decor
+      objectReference: {fileID: 0}
     - target: {fileID: 618169616716463931, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.15
@@ -691,6 +711,10 @@ PrefabInstance:
     - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_Name
       value: PostesElectrcidadFinal
+      objectReference: {fileID: 0}
+    - target: {fileID: 279220226890048897, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
+      propertyPath: m_TagString
+      value: Decor
       objectReference: {fileID: 0}
     - target: {fileID: 618169616716463931, guid: e8c450c1f1d259a44b725d4ebc88c5d2, type: 3}
       propertyPath: m_LocalScale.x

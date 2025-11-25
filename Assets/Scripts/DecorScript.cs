@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using System.Collections;
 
 public class GeneradorDecoraciones : MonoBehaviourPun
 {
@@ -15,37 +16,36 @@ public class GeneradorDecoraciones : MonoBehaviourPun
     [Header("Raycast")]
     public float alturaRaycast = 500f;
 
-    [Header("Objetos Prohibidos (GameObjects)")]
-    public GameObject[] objetosProhibidos;
+    private int generados = 0;
 
-    void Update()
+    void Start()
     {
         if (PhotonNetwork.IsMasterClient)
-            GenerarObjetos();
+            StartCoroutine(GenerarContinuo());
     }
 
-    void GenerarObjetos()
+    IEnumerator GenerarContinuo()
     {
         float maxDist = alturaRaycast + 1000f;
 
-        for (int i = 0; i < cantidadObjetos; i++)
+        while (generados < cantidadObjetos)
         {
             Vector2 punto = Random.insideUnitCircle * radioGeneracion;
-
             Vector3 origen = new Vector3(punto.x, alturaRaycast, punto.y);
 
-            // ❌ No generar si Z < 0
             if (origen.z < 0)
+            {
+                yield return null;
                 continue;
-
-            Debug.DrawRay(origen, Vector3.down * maxDist, Color.red, 2f);
+            }
 
             if (Physics.Raycast(origen, Vector3.down, out RaycastHit hit, maxDist))
             {
-
-                Debug.Log("Raycast tocó: " + hit.collider.gameObject.name + " | Tag: " + hit.collider.tag);
-                if (EsObjetoProhibido(hit.collider.transform))
+                if (hit.collider.CompareTag("Track"))
+                {
+                    yield return null;
                     continue;
+                }
 
                 string nombrePrefab = nombresPrefabs[Random.Range(0, nombresPrefabs.Length)];
 
@@ -56,27 +56,11 @@ public class GeneradorDecoraciones : MonoBehaviourPun
                 );
 
                 obj.transform.parent = this.transform;
+
+                generados++;
             }
+
+            yield return null;
         }
-    }
-
-    bool EsObjetoProhibido(Transform t)
-    {
-        Debug.Log(t.gameObject.name);
-
-        if (t.gameObject.CompareTag("Track"))
-            return true;
-
-        for (int i = 0; i < objetosProhibidos.Length; i++)
-        {
-            Transform prohibido = objetosProhibidos[i].transform;
-
-            if (t == prohibido)
-                return true;
-
-            if (t.IsChildOf(prohibido))
-                return true;
-        }
-        return false;
     }
 }

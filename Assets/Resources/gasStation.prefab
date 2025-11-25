@@ -639,7 +639,7 @@ GameObject:
   - component: {fileID: 2373075729413089018}
   m_Layer: 0
   m_Name: gasStation
-  m_TagString: Untagged
+  m_TagString: Track
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1694,7 +1694,7 @@ GameObject:
   - component: {fileID: 6820374907649094682}
   m_Layer: 0
   m_Name: base nafta
-  m_TagString: Untagged
+  m_TagString: Track
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -33,7 +33,6 @@ public class GeneradorDecoraciones : MonoBehaviourPun
             Vector2 punto = Random.insideUnitCircle * radioGeneracion;
             Vector3 origen = new Vector3(punto.x, alturaRaycast, punto.y);
 
-            // evitar zona negativa si querés
             if (origen.z < 0)
             {
                 yield return null;
@@ -42,7 +41,7 @@ public class GeneradorDecoraciones : MonoBehaviourPun
 
             if (Physics.Raycast(origen, Vector3.down, out RaycastHit hit, maxDist))
             {
-                // ❗ NO generar sobre rutas NI sobre decoraciones ya existentes
+                // Evitar rutas y decor existentes
                 if (hit.collider.CompareTag("Track") || hit.collider.CompareTag("Decor"))
                 {
                     yield return null;
@@ -57,8 +56,10 @@ public class GeneradorDecoraciones : MonoBehaviourPun
                     Quaternion.Euler(0, Random.Range(0f, 360f), 0)
                 );
 
-                obj.transform.parent = this.transform;
+                // 🔥 Marcar este objeto como decor
+                obj.tag = "Decor";
 
+                obj.transform.parent = this.transform;
                 generados++;
             }
 

@@ -61,7 +61,6 @@ public class CarController : MonoBehaviour
         GetInputs();
         AnimatedWheels();
         WheelEffects();
-        ConsumeFuel();
     }
 
     void FixedUpdate()
@@ -154,13 +153,5 @@ public class CarController : MonoBehaviour
     public void AssignWheels()
     {
         wheels = GameObject.FindFirstObjectByType<wheelMaster>().wheels;
-    }
-
-    void ConsumeFuel()
-    {
-        if (fuel <= 0f) return;
-
-        fuel -= fuelConsumptionRate * Time.deltaTime;
-        if (fuel < 0f) fuel = 0f;
     }
 }

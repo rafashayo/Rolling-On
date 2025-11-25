@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 9b305df08488a32498e99d6ee96edb1b, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -543,14 +543,6 @@ MonoBehaviour:
   radioGeneracion: 2000
   cantidadObjetos: 500
   alturaRaycast: 500
-  objetosProhibidos:
-  - {fileID: 6325308517142531936, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
-  - {fileID: 7180002520455717979, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
-  - {fileID: 7435229018741540595, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
-  - {fileID: 7747163380410942079, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
-  - {fileID: 8090596801830288186, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
-  - {fileID: -2900445842746562530, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
-  - {fileID: 8145427274663793177, guid: 595f5ae34a3a43d4db1091fef76ca57d, type: 3}
 --- !u!1 &1795754971
 GameObject:
   m_ObjectHideFlags: 0

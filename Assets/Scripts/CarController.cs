@@ -32,8 +32,8 @@ public class CarController : MonoBehaviour
     public float RotationSpeed;
 
     // --- FUEL ---
-    public float fuel = 100f;              
-    public float fuelConsumptionRate = 5f; 
+    public float fuel = 100f;
+    public float fuelConsumptionRate = 5f;
 
     void Start()
     {
@@ -61,11 +61,11 @@ public class CarController : MonoBehaviour
         GetInputs();
         AnimatedWheels();
         WheelEffects();
-
         ConsumeFuel();
     }
 
-    void LateUpdate()
+    // --- AHORA LA FÍSICA VA EN FIXEDUPDATE ---
+    void FixedUpdate()
     {
         Move();
         Steer();
@@ -84,8 +84,9 @@ public class CarController : MonoBehaviour
         {
             if (wheel.axe1 == Axe1.Rear)
             {
-                // --- MODIFICADO: si fuel <= 0, no acelera ---
-                wheel.wheelCollider.motorTorque = (fuel > 0f) ? moveInput * maxAcceleration * aceleradorNumero : 0f;
+                // si no hay fuel, no acelera
+                wheel.wheelCollider.motorTorque =
+                    (fuel > 0f) ? moveInput * maxAcceleration * aceleradorNumero : 0f;
             }
             else
             {
@@ -110,15 +111,16 @@ public class CarController : MonoBehaviour
     {
         foreach (var wheel in wheels)
         {
-            // si presionás espacio, frena normalmente
+            // freno manual
             if (Input.GetKey(KeyCode.Space))
             {
-                wheel.wheelCollider.brakeTorque = 300 * brakeAcceleration * Time.deltaTime;
+                // ❗ brakeTorque NO lleva deltaTime
+                wheel.wheelCollider.brakeTorque = 300f * brakeAcceleration;
             }
-            // --- MODIFICADO: si fuel <= 0, frena automáticamente ---
+            // freno automático si se queda sin combustible
             else if (fuel <= 0f)
             {
-                wheel.wheelCollider.brakeTorque = 1000f; // fuerza de freno alta para detener
+                wheel.wheelCollider.brakeTorque = 1500f; 
             }
             else
             {
@@ -157,11 +159,9 @@ public class CarController : MonoBehaviour
 
     void ConsumeFuel()
     {
-        if (fuel <= 0f) return; // ya está en 0, no resta más
+        if (fuel <= 0f) return;
 
         fuel -= fuelConsumptionRate * Time.deltaTime;
         if (fuel < 0f) fuel = 0f;
-
-        // Debug.Log("Fuel: " + fuel.ToString("F1") + "%");
     }
 }

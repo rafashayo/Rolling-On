@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 945997581838397913}
   m_Layer: 0
   m_Name: Estacion
-  m_TagString: Untagged
+  m_TagString: Track
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -762,7 +762,7 @@ GameObject:
   - component: {fileID: 6483901579400347756}
   m_Layer: 0
   m_Name: ruta.001
-  m_TagString: Untagged
+  m_TagString: Track
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
